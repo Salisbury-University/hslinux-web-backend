@@ -1,0 +1,649 @@
+#+TITLE: Project
+
+* Hensen Knowledge Wiki
+** Overview
+We need some sort of documentation hub to host documentation for students, faculty, and the system administrator. The viewable documentation should be gated by the permissions of the signed in user.
+
+All technical documents will be written in markdown and contain frontmatter information regarding the privilege requirements and metadata for the document.
+
+** Expected Features
+*** Backend
+- Authenticate against the LDAP API
+- Strict automated unit testing on pull request
+- Database to store documents, user preferences and implement future features.
+- Parsing markdown files with frontmatter from a github repository into the database.
+- Username/group caching
+- Input validation on requests
+*** Frontend
+- Viewable documentation gated by privilege level
+- Markdown document rendering
+- Dark mode / light mode toggle via a button / checkbox in settings
+- Search mode
+
+** Technologies
+*** Backend
+- Node.js - Backend javascript runtime
+- Express.js - Lightware javascript web framework
+- Typescript - Stricter / more sane javascript
+- DotEnv - Allows parsing a .env file into the program as variables
+- Axios - Web API calls for authenticating
+- Japa / Supertest - Unit Testing
+- Postman - API testing utility
+- PostgreSQL - Relational Database
+- Prisma - Database ORM
+- Zod - Input validation
+
+*** Frontend
+- Vue.js 3 w/ composition API
+- Pinia - Data store
+- Typescript - Stricter / more sane javascript
+- Quasar - CSS Framework
+- DotEnv - Allows parsing a .env file into the program as variables
+- Marked.js (most likely) - String -> markdown converter
+- Mdx (instead of marked.js) - String -> markdown converter with extra features
+- timeago.js - Converts time into "12 seconds ago", "2 years ago"..etc style strings
+
+
+** Software Workflow
+The software development workflow we'll be following is modeled after the processes you'll experience in the real world.
+
+- I'm going to give you the project requirements in the form of a spec sheet for the backend, and some requests for the frontend.
+- Your team leader will break up the project into smaller managable 2 week goals (sprints).
+- Every sprint, your team leader will create "Issues" on the project for tasks related to to the sprint goals or fixing bugs
+- These issues will then be assigned to your team members by the team leader.
+- Create a new github branch for the feature based off of the master branch
+- Switch to branch on local dev environments
+	- Write unit tests until you cover every case you can think of (Come back and implement more if you think of them).
+	- Implement feature
+	- Run unit tests until successful (return to implement feature if unsuccessful)
+- Create pull request for feature to merge to master branch when finished
+	- Check if the automated unit tests run successfully in the pull request
+		- If they don't pass, fix it.
+	- Code review with me / team
+	  - If no issues we merge the request and handle any merge conflicts
+	  - Otherwise, return to implementing until the standards are met.
+
+The Kanban board / project board we'll be using will have 5 main categories that will be used to track the progress of each task.
+1. TODO - Items assigned, but not yet in progress
+2. In Progress - Actively working on the task
+3. Under Review - Work is /completed/ and a pull request has been opened for the code to be reviewed and potentially merged. Code review responsibility should go to the team leader, or someone that didnt' work on the feature.
+4. Final Review - The peer review has completed, and now I'll review the code.
+5. Done - We merge the code and close the issue.
+
+In the event that either review fails, we send the task back to *In Progress*.
+
+** Coding Standards
+We need to settle on a set list of coding standards so our project doesn't become ugly. We will be mostly following [[https://google.github.io/styleguide/tsguide.html][Google's Typescript Style Guide]] with the addition of docstrings for documentation.
+
+I'll give a little tl;dr here to minimally get started, but if you have any questions, you should refer to their style guide.
+
+*** Editor Settings
+- Tab / indentation: 2 spaces
+- New line character: \n (no \r\n from windows)
+
+*** Functions
+A new function should follow this sort of format
+#+begin_src typescript :exports code
+/**
+ * A short description of the function
+ *
+ * @param {Request} req A request object from express
+ * @param {Response} res A response object from express
+ *
+ * @return {Promise} Returns a void promise
+ */
+function someFunctionName(req: Request, res: Response): Promise<void> {
+    // do some stuff
+}
+#+end_src
+
+Breaking this down...
+- the documentation above the function is called a docstring. It documents the purpose of the function and the expected input and output. In modern IDEs, it will also be the information that pops up if you hover the function call from another file.
+- The function is defined with explicit types for the arguments
+- The function has a defined return type
+- The bracket opening the function is on the same line {
+- Lower camel case naming convention
+
+*** Classes / objects
+#+BEGIN_SRC typescript :exports code
+/*
+ * A short description of the class
+ */
+class MyClass {
+	/** @param {string=} someString */
+	constructor(someString: String = 'default string') {
+		/** @private @const {string} */
+		this.someString_ = someString;
+	}
+}
+
+const SomeObject = {
+	/**
+	,* A very useful function description
+	,*
+	,* @param {Request} req Express request object
+	,* @param {Response} res Express response object
+	,*/
+	aUsefulFunction(req: Request, res: Response) {
+		// do some stuff
+	}
+}
+
+#+END_SRC
+You'll notice the same docstrings here, but also for the properties of the class and not just functions.
+The class and objects also use camelcase but the first letter is upper case.
+
+Refer to me or the style guide for other formatting questions. Any formatting issues will cause a pull request to be denied to maintain a clean and readble codebase.
+
+** Skills / knowledge required or suggested
+- Vue.js
+	- Components
+	- Events
+	- Templates / views
+	- Composition API
+	- State management (with Pinia)
+	- Frontend routing
+	- Vue.js lifecycle hooks
+	- Reactivity (refs, reactive, computed / watch, etc)
+	- Single file components
+	- Conditional rendering
+	- List rendering
+	- Props / how data flows through components
+	- ``<script setup>`` style components
+	- Data binding / form input binding
+	- Directives
+- Javascript / Typescript
+- Asynchronous programming & promises
+- Express.js
+	- Routing
+	- Middleware
+	- Error / exception handling
+	- Database integration
+	- How to build a REST API with Express.js
+- Databases
+	- Migration scripts
+	- Seeders
+	- ORMs
+- Docstrings
+- Unit Testing /w Japa
+- Github actions
+- HTTP Status Codes
+- Axios
+
+** Potential documentation
+To give an idea of the types of documentation that we might host under different levels of permissions, here are a few examples.
+
+*** Students
+- How to ssh into the linux lab
+- How to change your password
+- How to access the cyber security lab
+- How to get a linux lab account created
+- How to get door access for HPCL / HS101
+- How to run things on the cluster
+- Setting up your own cluster
+- Faculty pages
+- Accessing the student webpages
+- Submitting a linux IT ticket
+
+*** Faculty
+- Submitting a linux IT ticket
+- Requesting new student accounts
+- Accessing & running things on the professor cluster
+
+*** System Administrator
+This category will mostly be my notes on the setup
+- Github access
+- LDAP notes & access
+- Cyber security lab infrastructure notes & acces
+- Perdue system infrastructure notes
+- Hensen infrastructure notes
+- Foreman installation, setup, etc.
+- Setting up HPCL as a cluster
+- NFS setup / notes
+- Puppet notes
+- OpenMPI notes
+- Hardware notes
+- Setting up a development environment with VMs
+- DNS notes
+- MAC addresses / IP mappings
+- Subnet documentation
+- Vercel / Heroku documentation
+
+** Skills / knowledge required or suggested
+- Vue.js
+	- Components
+	- Events
+	- Templates / views
+	- Composition API
+	- State management (with Pinia)
+	- Frontend routing
+	- Vue.js lifecycle hooks
+	- Reactivity (refs, reactive, computed / watch, etc)
+	- Single file components
+	- Conditional rendering
+	- List rendering
+	- Props / how data flows through components
+	- ``<script setup>`` style components
+	- Data binding / form input binding
+	- Directives
+- Javascript / Typescript
+- Asynchronous programming & promises
+- Express.js
+	- Routing
+	- Middleware
+	- Error / exception handling
+	- Database integration
+	- How to build a REST API with Express.js
+- Databases
+	- Migration scripts
+	- Seeders
+	- ORMs
+- Docstrings
+- Unit Testing /w Japa
+- Github actions
+- HTTP Status Codes
+- Axios
+
+** Project Specification
+*** Backend API Routes
+**** Authentication Routes
+***** POST /api/v1/auth/login
+****** Overview
+Authentication endpoint.
+
+****** Expected Functionality
+Authenticate users against the LDAP API by sending a POST request to that server using the credentials we receive.
+
+Should have some sort of rate limiting to prevent people from spamming the endpoint to crack passwords.
+
+****** Expected Input
+Should be a POST request containing JSON in the body. The JSON should handle the following fields
+
+#+BEGIN_SRC json
+{
+	"username": "cxarausa",
+	"password": "somepassword",
+	"route": "the attempted route (if any)"
+}
+#+END_SRC
+
+****** Expected Response
+******* Success
+JSON containing a JWT token for their session and the route they attempted to access before authentication.
+
+#+BEGIN_SRC json
+{
+	"token": "asdkfjhasdklf",
+	"route": "/"
+}
+#+END_SRC
+
+******* Failure
+Forbidden exception
+
+***** POST /api/v1/auth/logout
+****** Overview
+This route should sign out the user by invalidating their JSON Web Token.
+
+****** Expected Functionality
+Invalidate the JSON Web Token by removing it from any internal data store and telling the LDAP API to invalidate it as well. That way, next time we attempt to validate the token, it errors from not being found.
+
+****** Expected Input
+The input should be the authorization header containing the web token. It looks something like this
+
+#+BEGIN_SRC
+Authorization: Bearer <token>
+#+END_SRC
+
+****** Expected Response
+******* Success
+HTTP Code 200 for success.
+
+There is no failure here, even if they aren't logged in.
+**** Multi-Document Routes
+***** GET /api/v1/docs
+****** Overview
+This route should fetch the full list of document ids that the user has access to.
+
+****** Expected Functionality
+- Fetch a list of document ids from the database using a filter or something to only return ones the user has access to.
+- Return the documents
+
+****** Expected Input
+The expected input won't be a body, but rather the authentication token in the headers.
+
+The header we're looking for looks like
+#+begin_src
+Authorization: Bearer <token>
+#+end_src
+****** Expected Output
+The expected response will be a JSON body containing a list of document ids
+
+#+BEGIN_SRC json
+{
+	"docs": [
+		"id1",
+		"id2",
+		"id3"
+	]
+}
+#+END_SRC
+
+***** GET / api/v1/docs/:page
+****** Overview
+This route should fetch a list of document ids that the user has access to, but only in a specific range. We'll define a maximum number of documents per page, such as 10 or 15, and then use this route to create pagination in the frontend.
+
+****** Expected Functionality
+- Fetch a list of documents from the database using a filter or something to only return ones the user has access to and only return X amount of results between the given range.
+- Return the documents
+
+****** Expected Input
+The expected input won't be a body, but rather the authentication token in the headers.
+
+The header we're looking for looks like
+#+BEGIN_SRC
+Authorization: Bearer <token>
+#+END_SRC
+****** Expected Output
+The expected response will be a JSON body containing a list of documents
+
+#+BEGIN_SRC json
+{
+	"docs": [
+		"id1",
+		"id2",
+		"id3"
+	]
+}
+#+END_SRC
+
+**** Single Document Routes
+***** GET / api/v1/doc/:id
+****** Overview
+This route should fetch a document's contents and metadata. As well as verify the user's permissions for whether they can access this document.
+
+****** Expected Functionality
+- Check if a document exists
+	- Return 404 if missing
+- Verify user permissions on the document
+	- Return 403 forbidden if they're logged in, 401 if they're not logged in (and send them to login)
+- Return the document & metadata if permissions check out
+
+****** Expected Input
+The expected input won't be a body, but rather the authentication token in the headers.
+
+The header we're looking for looks like
+
+#+begin_src
+Authorization: Bearer <token>
+#+end_src
+
+****** Expected Output
+******* Success
+The expected response will be a JSON body containing the document's contents, as well as any metadata.
+
+#+BEGIN_SRC json
+{
+	"id": "some id",
+	"content": "a lot of markdown",
+	"metadata": {
+		"dateCreated": "some date",
+		"dateUpdated": "some other date",
+		"privilege": "students",
+		"author": "some author"
+	}
+}
+#+END_SRC
+
+******* Failure
+404 exception if the document is missing
+403 if user is logged in but doesn't have permissions to view
+401 if user is not logged in and redirect to sign in (maybe return the route with the JSON in the 401)
+
+**** Search Routes
+***** GET /api/v1/search?somequery
+****** Overview
+We should have some backend method to handle search queries.
+
+We can add more filters later if needed by just adding paramters to the GET string and tweaking the output JSON.
+****** Expected Functionality
+It should search the contents and title of every document the **user has access to.**
+
+****** Expected Input
+Our expected input is an Authorization header and a search string.
+
+The header we're looking for looks like
+
+#+begin_src
+Authorization: Bearer <token>
+#+end_src
+
+The search string will follow typical GET request string formats.
+****** Expected Output
+The output will be a JSON object but we can probably do one of two methods
+
+1. Only expect documents / wiki pages to be hosted and no future features. In this case we only need to return a JSON object with a list of documents, the matching string, etc. Example below
+#+BEGIN_SRC json
+{
+	"search": "the search string",
+	"results": [
+		{
+			"id": "document id",
+			"match": "the matching string context. Maybe the paragraph, and we can narrow it clientside if we want.",
+			"metadata": {
+				"dateCreated": "some date",
+				"dateUpdated": "some other date",
+				"privilege": "students",
+				"author": "some author"
+			}
+		},
+		{
+			// object 2
+		},
+		...
+	]
+}
+#+END_SRC
+
+2. We plan ahead for other potential features, such as events, schedules, etc. In this case we could either return one big list like above, but add a content "type" field to the object, to specify if it's a document, event, etc. Or we could separate them into their own individual lists. Either way we could do it client or server-side.
+**** User Routes
+***** GET / api/v1/user/:id
+****** Overview
+This route should fetch a user's information, by their ID / username.
+
+****** Expected functionality
+- Check if the user exists
+	- Return 404 if missing
+- Return the user's information
+
+****** Expected Input
+There is no expected input since the route contains the username of the user we're searching up, and the request is unprivileged.
+
+****** Expected Output
+The output should be a JSON body containing the user's information
+
+Example below
+
+#+BEGIN_SRC json
+{
+	"cxarausa": {
+		"id": "cxarausa",
+		"groups": ["faculty", "users", "cyber"]
+	}
+}
+#+END_SRC
+
+**** Preference Routes
+***** POST /api/v1/preferences
+****** Overview
+This route should update the currently logged in user's preferences.
+
+****** Expected Functionality
+- Check if the user is logged in
+	- If not, 401
+- Input check the preferences
+	- If there is an issue with the preferences, return 422 unprocessable identity
+- Update the preferences in the db
+- Return the new preferences
+
+****** Expected Input
+The expected input is both a body and an authentication header.
+
+The header we're looking for looks like
+#+begin_src
+Authorization: Bearer <token>
+#+end_src
+
+The body should look like this
+
+#+BEGIN_SRC json
+{
+	"preferences": {
+		"darkmode": true,
+		...
+	}
+}
+#+END_SRC
+
+****** Expected Output
+******* Success
+The expected output should be a JSON object of the new preferences
+
+#+BEGIN_SRC json
+{
+	"preferences": {
+		"darkmode": true,
+		...
+	}
+}
+#+END_SRC
+******* Failure
+401 - if the user isn't logged in
+422 - if the preferences are bad / don't pass input validation
+
+***** GET /api/v1/preferences
+****** Overview
+This route should fetch a user's preferences.
+
+****** Expected Functionality
+- Check if user is logged in
+	- 401 exception if not
+- Fetch user preferences from db
+- Return as a JSON object
+
+****** Expected Input
+The expected input won't be a body, but rather the authentication token in the headers.
+
+The header we're looking for looks like
+#+begin_src
+Authorization: Bearer <token>
+#+end_src
+
+****** Expected Output
+******* Success
+On success, the route should return a list of the user's preferences
+
+#+begin_src json
+	"preferences": {
+		"darkmode": true,
+		...
+	}
+#+end_src
+******* Failure
+The only failure should be if the user isn't logged in
+- 401 not logged in
+
+*** Frontend
+**** Pages
+***** Index (/)
+****** Overview
+The main index with publicly available contents and some other fluff.
+
+Not sure how we're gonna use all the space here, but we'll figure that out as we go.
+
+***** Sign in / registration
+****** Overview
+We obviously need a sign in / registration page.
+
+****** Design thoughts
+We could make this a modal that overlays the screen on whatever page they're on, and a dedicated route for if they're visiting directly.
+
+***** /doc/:id
+****** Overview
+A specific document's route.
+
+This would basically just be the markdown render for the page or you'd be kicked off if you don't have permission to view / it doesn't exist.
+
+****** Design thoughts
+I'm thinking we keep this similar to our index, that way as long as a user is navigating around, it is a cohesive experience.
+
+***** /search/somequery
+****** Overview
+We should have some sort of search function accessible on every page, but also maybe a global page that also has results.
+
+****** Design thoughts
+Think google. Where even on the results page, the search bar is still above for tweaking and such.
+
+Besides that, we should keep a similar design to the other pages.
+** Post-project additions
+These are some features to think about if we finish early and we want to continue (instead of switching to another project)
+
+*** Events (current / previous)
+We could advertise ongoing / upcomming events on the main page and have a dedicated events page for a more thorough overview and links to old events / their results.
+
+Some event examples
+- Student-run initiatives
+- Cyber Security Lab events / creation
+- Math and COSC events
+- Gull Code (Along with dedicated pages for the previous results)
+- Upcoming lectures
+- Research Experiences for Undergraduates
+
+*** Lab Schedules
+I know it's convenient for me to know when classes are in the labs, I imagine it'd be useful for others to know as well.
+
+We could just host it as a table and update it the first week of every semester.
+
+*** Control Panel
+Basically, another project I have that might integrate well into this project, is a control panel for the system administrator and maybe a toned down version for the users.
+
+This would be a lot of work, but if we drill the fundamentals of web development early, it might be doable.
+
+**** Potential Features
+***** Password Management
+Anyone with a linux account should be able to log in, we might as well allow them to change their password here. It'd be super convenient.
+
+We should also allow the system administrator to reset / change anyone's password. Maybe we could integrate an email service to email someone when their password has been reset and send their temporary password.
+
+***** Group Management
+Same as password management. I should be able to add / remove groups on users.
+
+***** System Monitor / Dashboard
+There are a lot of moving parts in our infrastructure and it's only growing. It'd be nice to have a broad overview of the health of the individual systems, as well as links to each system. Maybe even a short description or a link to the documentation.
+
+****** Computer Configuration Health
+We could check the configuration health by calling on Foreman's API. We could query things such as whether the configuration is up to date, whether the last execution failed, the overall computer's status.
+
+We could have some sort of pie chart overview so I can just glance at computers that are working, and ones that are erroring.
+
+****** Storage Pool Health
+In the future when the Perdue server cluster comes back online, we're going to have an absolutely insane amount of storage over there running in a ZFS raid array. Typically these are pretty redundant in the case of a single or even dual drive failure, but it's also quite easy to neglect checking those systems.
+
+So again, a brief overview / widget for the health of the system in a dashboard would be nice. So that me or the next system admin legit can't ignore it.
+
+****** Jobs running on both clusters
+There are two computing clusters, one in HPCL and one in Perdue for the professors. It might be nice to have a widget that just lists ongoing jobs or the status of the last few jobs.
+
+A kill switch for the job would be cool too, but I'm not stressing that right now.
+
+***** DNS Management
+Right now our DNS is managed via a program called Foreman, but it only manages devices that it is directly managing.
+
+There are two immediate uses I see for this
+1. DNS managing the cyber security lab and professor devices without having Foreman manage them (since foreman manages the OS and software as well).
+2. Fixing fuck ups - Yes I fucked up, and probably will in the future too. Right now the DNS is being replaced with a /etc/hosts file, which acts as a sort of 'local dns' on each machine. I fucked up the main DNS and its zone, and it'd be a pain to fix it or create a new DNS server.
+
+The underlying DNS software that Foreman uses is called BIND, which is one of the most popular DNS on linux. So this project would require you to get quite familiar with it.
+
+***** Ticketing System
+Right now there is no way for people to let me know of any issues or thiings they need done without directly emailing me or coming to see me. I'm sure that there are free ticketing systems somewhere, but having it integrated would be useful if we go full control panel mode.
