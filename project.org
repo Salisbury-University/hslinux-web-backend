@@ -561,9 +561,9 @@ The main index with publicly available contents and some other fluff.
 
 Not sure how we're gonna use all the space here, but we'll figure that out as we go.
 
-***** Sign in / registration
+***** Sign in
 ****** Overview
-We obviously need a sign in / registration page.
+We obviously need a sign in
 
 ****** Design thoughts
 We could make this a modal that overlays the screen on whatever page they're on, and a dedicated route for if they're visiting directly.
