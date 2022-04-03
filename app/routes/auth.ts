@@ -11,4 +11,6 @@ import AuthMiddleware from "../http/middleware/AuthMiddleware";
 //router.get("/", IndexController.index);
 
 router.post('/api/v1/auth/login', AuthController.login);
+
+router.post('/api/v1/auth/logout', AuthController.logout)
 export default router;

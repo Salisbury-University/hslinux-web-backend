@@ -26,9 +26,22 @@ export const AuthController = {
    * @param res {Response} Express response object
    * @param next {NextFunction} Express NextFunction (used for middleware)
    */
-  login(req: Request, res: Response, next: NextFunction) {
-    AuthService.login(req, res);
+  async login(req: Request, res: Response, next: NextFunction){
+    await AuthService.login(req, res);
+    console.log("After login in controller");    
     return next();
-  }
+  },
 
+   /**
+   * Handles logout requests on /auth routes
+   * 
+   * @param req {Request} Express request object
+   * @param res {Response} Express response object
+   * @param next {NextFunction} Express NextFunction (used for middleware)
+   */
+    async logout(req: Request, res: Response, next: NextFunction){
+      await AuthService.logout(req, res);  
+      return next();
+    }
+  
 };

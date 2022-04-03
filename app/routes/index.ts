@@ -19,10 +19,10 @@ router.get("/", IndexController.index);
 // Example route for input validation that expects a JSON with a message string
 router.post("/", validate(schema), IndexController.index);
 
-/*
+
 // Nested router for authentication examples
 import authRouter from "./auth";
 router.use("/auth", authRouter);
-*/
+
 // Export the router
 export default router;
