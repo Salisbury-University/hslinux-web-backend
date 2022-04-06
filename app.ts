@@ -16,12 +16,6 @@ import authRouter from "./app/routes/auth";
 app.use("/", indexRouter);
 app.use(authRouter);
 
-/** Global Middleware Example */
-import ExampleMiddleware from "./app/http/middleware/ExampleMiddleware";
-
-/** Using the middleware on all routes */
-//app.use(ExampleMiddleware);
-
 /** Using a custom error handler */
 import ExceptionHandler from "./app/exceptions/ExceptionHandler";
 app.use(ExceptionHandler);

@@ -14,6 +14,9 @@ export default async function (
   res: Response,
   next: NextFunction
 ) {
+  //Check if token exists
+  //Check syntax
+
   // Check request headers for authorization token of some kind
   // We'll just assume the entire authorization header is the token for the example.
   const token = req.headers.authorization ? req.headers.authorization : ""; // auth header or empty string.

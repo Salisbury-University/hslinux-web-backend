@@ -8,7 +8,7 @@ import { IndexController } from "../http/controllers/IndexController";
 
 // import validation middleware
 import validate from "../http/middleware/ValidationMiddleware";
-import schema from "../schema/example";
+import schema from "../schema/login";
 
 // Create a router instance for our nested routes.
 const router = express.Router();

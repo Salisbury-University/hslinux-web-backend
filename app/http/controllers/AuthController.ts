@@ -6,20 +6,6 @@ import { AuthService } from "../../services/AuthService";
  */
 export const AuthController = {
   /**
-   * Handles the default request on /
-   *
-   * @param req {Request} Express request object
-   * @param res {Response} Express response object
-   * @param next {NextFunction} Express NextFunction (used for middleware)
-   */
-  index(req: Request, res: Response, next: NextFunction) {
-    res.send("Welcome to Rathma's express.js / typescript template.");
-
-    return next();
-  },
-
-
-  /**
    * Handles login requests on /auth routes
    * 
    * @param req {Request} Express request object
@@ -27,8 +13,20 @@ export const AuthController = {
    * @param next {NextFunction} Express NextFunction (used for middleware)
    */
   async login(req: Request, res: Response, next: NextFunction){
-    await AuthService.login(req, res);
-    console.log("After login in controller");    
+    //Pull uid and password from request body
+    const { uid, password } = req.body;
+
+    //Try login function and catch any errors
+    try{
+      const token = await AuthService.login(uid, password);
+
+      res.send({token});
+      //return next(token);
+    }
+    catch(err) {
+      return next(err);
+    }
+
     return next();
   },
 
@@ -40,7 +38,13 @@ export const AuthController = {
    * @param next {NextFunction} Express NextFunction (used for middleware)
    */
     async logout(req: Request, res: Response, next: NextFunction){
-      await AuthService.logout(req, res);  
+      try{
+        await AuthService.logout(req, res);  
+      }
+      catch(err) {
+        return next(err);
+      }
+      
       return next();
     }
   
