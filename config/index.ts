@@ -4,10 +4,8 @@ import "dotenv/config";
 import app from "./app";
 // Import auth configuration
 import auth from "./auth";
-// Import LDAP configuration
-import ldap from "./ldap";
 
 /** Configuration loaded from ``config/`` & environmental variables */
 export const config = {
-  app, auth, ldap
+  app, auth
 };
