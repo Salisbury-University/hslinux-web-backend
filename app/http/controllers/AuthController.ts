@@ -19,10 +19,6 @@ export const AuthController = {
     //Try login function and catch any errors
     try{
       const token = await AuthService.login(uid, password);
-
-      console.log("Back in controller")
-      console.log(token)
-      
       res.send({token});
       //return next(token);
     }

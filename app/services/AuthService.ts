@@ -33,7 +33,7 @@ export const AuthService = {
   async login(uid: string, password: string) {   
   
     //Make post request to api using axios
-      await axios({
+      return await axios({
         method: 'post',
         url: 'http://hslinux:38383/api/v1/auth',
         data: {
