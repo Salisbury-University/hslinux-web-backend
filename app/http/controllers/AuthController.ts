@@ -20,6 +20,9 @@ export const AuthController = {
     try{
       const token = await AuthService.login(uid, password);
 
+      console.log("Back in controller")
+      console.log(token)
+      
       res.send({token});
       //return next(token);
     }

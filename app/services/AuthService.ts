@@ -35,14 +35,15 @@ export const AuthService = {
     //Make post request to api using axios
       await axios({
         method: 'post',
-        url: 'hslinux:38383/api/v1/auth',
+        url: 'http://hslinux:38383/api/v1/auth',
         data: {
           uid: uid,
           password: password
         }
       }).then((response) => {
+        console.log(response.data.token)
         return response.data.token
-      }, (error) => {
+      }).catch((err) => {
         throw new UnauthorizedException("LDAP Authentication Failed");
       })
 
