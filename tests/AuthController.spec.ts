@@ -16,7 +16,7 @@ test.group('AuthController', (group) => {
     })
 
     //Testing user login
-    test("AuthService Good Login", async ({expect}, done: Function) => {
+    test("AuthController Good Login", async ({expect}, done: Function) => {
         const username = "cxarausa";
         const password = "testing";       
         
@@ -41,7 +41,7 @@ test.group('AuthController', (group) => {
     }).waitForDone();
 
     //Testing user login with bad credentials
-    test("AuthService Bad Login", async ({expect}, done: Function) => {
+    test("AuthController Bad Login", async ({expect}, done: Function) => {
         const badUsername = "BadUsername";
         const badPassword = "BadPwd";
 

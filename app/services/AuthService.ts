@@ -41,7 +41,6 @@ export const AuthService = {
           password: password
         }
       }).then((response) => {
-        console.log(response.data.token)
         return response.data.token
       }).catch((err) => {
         throw new UnauthorizedException("LDAP Authentication Failed");
