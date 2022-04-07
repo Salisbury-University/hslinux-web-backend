@@ -27,7 +27,7 @@ test.group('AuthController', (group) => {
           .expect(200)
           .then(({ body }) => {
               //expecting the response body to have a token
-              expect(body).toHaveProperty("token");
+              expect(body).toBe(String);
               //Extract token and verify its a real jwt
               const { token } = body;
               
@@ -49,7 +49,7 @@ test.group('AuthController', (group) => {
           .post('/api/v1/auth/login')
           .send({badUsername, badPassword})
           .set( 'Accept', 'application/json')
-          .expect(401)
+          .expect(422)
           .then(({ body }) => {
               //expecting response body to have UnauthorizedException message
               expect(body).toHaveProperty("message");
