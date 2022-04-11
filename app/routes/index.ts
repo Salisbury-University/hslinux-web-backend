@@ -24,5 +24,8 @@ router.post("/", validate(schema), IndexController.index);
 import authRouter from "./auth";
 router.use("/auth", authRouter);
 
+import documentRouter from "./documents"
+router.use(documentRouter);
+
 // Export the router
 export default router;
