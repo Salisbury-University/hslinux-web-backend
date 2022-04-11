@@ -1,8 +1,7 @@
-import ldap from 'ldapjs';
 import axios from 'axios';
 import UnauthorizedException from "../exceptions/UnauthorizedException";
+require('dotenv').config();
 import { config } from '../../config';
-import jsonwebtoken from "jsonwebtoken";
 
 /**
  * An example of an authorization service to validate authorization tokens, or attempt sign ins.
@@ -35,7 +34,7 @@ export const AuthService = {
     //Make post request to api using axios
       return await axios({
         method: 'post',
-        url: 'http://hslinux:38383/api/v1/auth',
+        url: process.env.URL,
         data: {
           uid: uid,
           password: password

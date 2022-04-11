@@ -1,6 +1,7 @@
 import { test } from '@japa/runner';
 import request from 'supertest';
 import { app } from '../app';
+require('dotenv').config();
 
 import UnauthorizedException from '../app/exceptions/UnauthorizedException'
 
@@ -21,7 +22,7 @@ test.group('AuthController', (group) => {
         const password = "testing";       
         
         request(app)
-          .post('http://hslinux:38383/api/v1/auth')
+          .post(process.env.URL)
           .send({username, password})
           .set( 'Accept', 'application/json')
           .expect(200)
@@ -46,7 +47,7 @@ test.group('AuthController', (group) => {
         const badPassword = "BadPwd";
 
         request(app)
-          .post('http://hslinux:38383/api/v1/auth')
+          .post(process.env.URL)
           .send({badUsername, badPassword})
           .set( 'Accept', 'application/json')
           .expect(422)
