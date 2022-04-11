@@ -34,7 +34,7 @@ export const AuthService = {
     //Make post request to api using axios
       return await axios({
         method: 'post',
-        url: process.env.URL,
+        url: process.env.AUTH_URL,
         data: {
           uid: uid,
           password: password

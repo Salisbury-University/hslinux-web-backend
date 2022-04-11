@@ -22,7 +22,7 @@ test.group('AuthController', (group) => {
         const password = "testing";       
         
         request(app)
-          .post(process.env.URL)
+          .post(process.env.AUTH_URL)
           .send({username, password})
           .set( 'Accept', 'application/json')
           .expect(200)
@@ -47,7 +47,7 @@ test.group('AuthController', (group) => {
         const badPassword = "BadPwd";
 
         request(app)
-          .post(process.env.URL)
+          .post(process.env.AUTH_URL)
           .send({badUsername, badPassword})
           .set( 'Accept', 'application/json')
           .expect(422)
