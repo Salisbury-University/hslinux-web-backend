@@ -1,9 +1,7 @@
 import { test } from '@japa/runner';
 import request from 'supertest';
 import { app } from '../app';
-require('dotenv').config();
-
-import UnauthorizedException from '../app/exceptions/UnauthorizedException'
+import { config } from '../config';
 
 
 test.group('AuthController', (group) => {
@@ -17,12 +15,12 @@ test.group('AuthController', (group) => {
     })
 
     //Testing user login
-    test("AuthController Good Login", async ({expect}, done: Function) => {
+    test("User Login", async ({expect}, done: Function) => {
         const username = "cxarausa";
         const password = "testing";       
         
         request(app)
-          .post(process.env.AUTH_URL)
+          .post(config.auth.AUTH_URL)
           .send({username, password})
           .set( 'Accept', 'application/json')
           .expect(200)
@@ -42,12 +40,12 @@ test.group('AuthController', (group) => {
     }).waitForDone();
 
     //Testing user login with bad credentials
-    test("AuthController Bad Login", async ({expect}, done: Function) => {
+    test("Bad Credentials Login", async ({expect}, done: Function) => {
         const badUsername = "BadUsername";
         const badPassword = "BadPwd";
 
         request(app)
-          .post(process.env.AUTH_URL)
+          .post(config.auth.AUTH_URL)
           .send({badUsername, badPassword})
           .set( 'Accept', 'application/json')
           .expect(422)
@@ -57,7 +55,7 @@ test.group('AuthController', (group) => {
               //Extract message to verify its the correct message
               const { message } = body;
               
-              expect(message).toBe("LDAP Authentication Failed")
+              expect(message).toBe("Unauthorized Access")
 
               done();
           })

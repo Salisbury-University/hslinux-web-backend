@@ -1,6 +1,5 @@
 import axios from 'axios';
 import UnauthorizedException from "../exceptions/UnauthorizedException";
-require('dotenv').config();
 import { config } from '../../config';
 
 /**
@@ -34,7 +33,7 @@ export const AuthService = {
     //Make post request to api using axios
       return await axios({
         method: 'post',
-        url: process.env.AUTH_URL,
+        url: config.auth.AUTH_URL,
         data: {
           uid: uid,
           password: password

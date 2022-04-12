@@ -2,8 +2,6 @@ import { test } from '@japa/runner';
 import { AuthService } from "../app/services/AuthService";
 
 import UnauthorizedException from '../app/exceptions/UnauthorizedException'
-import { group } from 'console';
-import { string } from 'zod';
 
 test.group("AuthService", (group) => {
 
@@ -19,7 +17,7 @@ test.group("AuthService", (group) => {
 
 
   //Login with good user credentials
-  test("AuthController Good Login", async ({ expect }, done: Function) => {
+  test("AuthService Good Login", async ({ expect }, done: Function) => {
     //username and password consistent with project spec
     const username = "cxarausa";
     const password = "testing";
@@ -33,7 +31,7 @@ test.group("AuthService", (group) => {
   }).waitForDone();
 
   //Throw UnauthorizedException with bad credentials on login
-  test("AuthController Bad Login", async ({ expect }, done: Function ) => {
+  test("AuthService Bad Login", async ({ expect }, done: Function ) => {
     const badUsername = "badUser";
     const badPassword = "1234";
 
