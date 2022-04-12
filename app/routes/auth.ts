@@ -10,7 +10,7 @@ const AuthRouter = express.Router();
 import AuthMiddleware from "../http/middleware/AuthMiddleware";
 // Everywhere below here will require authentication.
 
-AuthRouter.post('/api/v1/auth/login', validate(AuthLoginSchema), AuthController.login);
+AuthRouter.post('/login', validate(AuthLoginSchema), AuthController.login);
 
-AuthRouter.post('/api/v1/auth/logout', AuthController.logout)
+AuthRouter.post('/logout', AuthController.logout)
 export default AuthRouter;

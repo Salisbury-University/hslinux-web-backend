@@ -14,7 +14,6 @@ import authRouter from "./app/routes/auth";
 
 /** Configure application to use routers **/
 app.use("/", indexRouter);
-app.use(authRouter);
 
 /** Using a custom error handler */
 import ExceptionHandler from "./app/exceptions/ExceptionHandler";

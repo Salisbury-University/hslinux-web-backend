@@ -1,7 +1,7 @@
 import { test } from '@japa/runner';
 import { AuthService } from "../app/services/AuthService";
-
 import UnauthorizedException from '../app/exceptions/UnauthorizedException'
+
 
 test.group("AuthService", (group) => {
 
@@ -25,7 +25,7 @@ test.group("AuthService", (group) => {
     //Expecting the login function in AuthService to return the token
     const token = await AuthService.login(username, password);
 
-    expect(token).toBe(String);
+    expect(token).toBeTruthy();
 
     done();
   }).waitForDone();
