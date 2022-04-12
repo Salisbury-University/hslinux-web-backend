@@ -20,13 +20,13 @@ test.group('AuthController', (group) => {
         const password = "testing";       
         
         request(app)
-          .post(config.auth.AUTH_URL)
+          .post('/api/v1/auth/login')
           .send({username, password})
           .set( 'Accept', 'application/json')
           .expect(200)
           .then(({ body }) => {
               //expecting the response body to have a token
-              expect(body).toBe(String);
+              expect(body).toHaveProperty("token");
               //Extract token and verify its a real jwt
               const { token } = body;
               
@@ -45,7 +45,7 @@ test.group('AuthController', (group) => {
         const badPassword = "BadPwd";
 
         request(app)
-          .post(config.auth.AUTH_URL)
+          .post('/api/v1/auth/login')
           .send({badUsername, badPassword})
           .set( 'Accept', 'application/json')
           .expect(422)
