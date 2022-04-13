@@ -16,12 +16,12 @@ test.group('AuthController', (group) => {
 
     //Testing user login
     test("AuthController Good Login", async ({expect}, done: Function) => {
-        const username = "cxarausa";
+        const uid = "cxarausa";
         const password = "testing";       
         
         request(app)
           .post('/api/v1/auth/login')
-          .send({username, password})
+          .send({uid, password})
           .set( 'Accept', 'application/json')
           .expect(200)
           .then(({ body }) => {
@@ -41,21 +41,21 @@ test.group('AuthController', (group) => {
 
     //Testing user login with bad credentials
     test("AuthController Bad Login", async ({expect}, done: Function) => {
-        const badUsername = "BadUsername";
-        const badPassword = "BadPwd";
+        const uid = "BadUsername";
+        const password = "BadPwd";
 
         request(app)
           .post('/api/v1/auth/login')
-          .send({badUsername, badPassword})
+          .send({uid, password})
           .set( 'Accept', 'application/json')
-          .expect(422)
+          .expect(401)
           .then(({ body }) => {
               //expecting response body to have UnauthorizedException message
               expect(body).toHaveProperty("message");
               //Extract message to verify its the correct message
               const { message } = body;
               
-              expect(message).toBe("Unauthorized Access")
+              expect(message).toBe("LDAP Authentication Failed")
 
               done();
           })
