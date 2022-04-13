@@ -1,7 +1,6 @@
 import { test } from '@japa/runner';
 import request from 'supertest';
 import { app } from '../app';
-import { config } from '../config';
 
 
 test.group('AuthController', (group) => {
@@ -16,12 +15,12 @@ test.group('AuthController', (group) => {
 
     //Testing user login
     test("AuthController Good Login", async ({expect}, done: Function) => {
-        const uid = "cxarausa";
+        const username= "cxarausa";
         const password = "testing";       
         
         request(app)
           .post('/api/v1/auth/login')
-          .send({uid, password})
+          .send({uid: username, password: password})
           .set( 'Accept', 'application/json')
           .expect(200)
           .then(({ body }) => {
@@ -41,12 +40,12 @@ test.group('AuthController', (group) => {
 
     //Testing user login with bad credentials
     test("AuthController Bad Login", async ({expect}, done: Function) => {
-        const uid = "BadUsername";
-        const password = "BadPwd";
+        const badUsername = "BadUsername";
+        const badPassword = "BadPwd";
 
         request(app)
           .post('/api/v1/auth/login')
-          .send({uid, password})
+          .send({uid: badUsername, password: badPassword})
           .set( 'Accept', 'application/json')
           .expect(401)
           .then(({ body }) => {
