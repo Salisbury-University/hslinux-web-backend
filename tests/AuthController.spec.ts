@@ -1,7 +1,6 @@
 import { test } from '@japa/runner';
 import request from 'supertest';
 import { app } from '../app';
-import { config } from '../config';
 
 
 test.group('AuthController', (group) => {
@@ -16,12 +15,12 @@ test.group('AuthController', (group) => {
 
     //Testing user login
     test("AuthController Good Login", async ({expect}, done: Function) => {
-        const username = "cxarausa";
+        const username= "cxarausa";
         const password = "testing";       
         
         request(app)
           .post('/api/v1/auth/login')
-          .send({username, password})
+          .send({uid: username, password: password})
           .set( 'Accept', 'application/json')
           .expect(200)
           .then(({ body }) => {
@@ -46,16 +45,16 @@ test.group('AuthController', (group) => {
 
         request(app)
           .post('/api/v1/auth/login')
-          .send({badUsername, badPassword})
+          .send({uid: badUsername, password: badPassword})
           .set( 'Accept', 'application/json')
-          .expect(422)
+          .expect(401)
           .then(({ body }) => {
               //expecting response body to have UnauthorizedException message
               expect(body).toHaveProperty("message");
               //Extract message to verify its the correct message
               const { message } = body;
               
-              expect(message).toBe("Unauthorized Access")
+              expect(message).toBe("LDAP Authentication Failed")
 
               done();
           })
