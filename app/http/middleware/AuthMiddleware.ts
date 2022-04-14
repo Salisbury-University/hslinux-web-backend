@@ -14,18 +14,36 @@ export default async function (
   res: Response,
   next: NextFunction
 ) {
-  //Check if token exists
-  //Check syntax
 
-  // Check request headers for authorization token of some kind
-  // We'll just assume the entire authorization header is the token for the example.
-  const token = req.headers.authorization ? req.headers.authorization : ""; // auth header or empty string.
+      //Assing auth header to const and give default value if its not in the request
+      const authHeader = req.headers.authorization ? req.headers.authorization : "";
 
-  // If the auth service doesn't validate the user
-  if (!AuthService.validate(token)) {
-    return next(new UnauthorizedException());
-  }
+      //Check if auth header is correct length
+      if(authHeader.split(" ").length > 2){
+        return next(new UnauthorizedException());
+      }
 
-  // Go to the next middleware / controller
+      //Check if token is bearer
+      if(!AuthService.checkBearer(authHeader)) {
+        return next(new UnauthorizedException());
+      }
+    
+      //Pull token from authHeader for testing in other functions
+      const token = AuthService.getAuthToken(authHeader);
+      
+      //Call validate function to make sure there is an existing jwt
+      if (!AuthService.validate(token)) {
+        return next(new UnauthorizedException());
+      }
+
+      
+
+      //Check if token if malformed
+
+      //Check if token has been modified after allocation
+
+  
+
+
   return next();
 }

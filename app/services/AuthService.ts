@@ -1,6 +1,8 @@
 import axios from 'axios';
 import UnauthorizedException from "../exceptions/UnauthorizedException";
 import { config } from '../../config';
+import { nextTick } from 'process';
+import { NextFunction } from 'express';
 
 /**
  * An example of an authorization service to validate authorization tokens, or attempt sign ins.
@@ -21,6 +23,35 @@ export const AuthService = {
     return false;
   },
 
+   /**
+   * Checks Authorization Header to make sure its a bearer token
+   * 
+   * @param authHeader  authorization header
+   * @returns true if auth header is bearer token
+   */
+    checkBearer(authHeader: String) {
+      const authType = authHeader && authHeader.split(' ')[0]
+      
+      if(authType == "Bearer"){
+        return true
+      }
+      return false
+
+    },
+  
+  
+  /**
+   * Pull JWT from authorization header
+   * 
+   * @param req {Request} express request object
+   * @returns auth token
+   */
+  getAuthToken(authHeader: String) {
+      const authToken = authHeader && authHeader.split(' ')[1]
+      return authToken
+  },
+
+ 
   /**
    * Handles sign in attempts from users
    *  
