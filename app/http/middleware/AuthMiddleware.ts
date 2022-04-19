@@ -15,7 +15,7 @@ export default async function (
   next: NextFunction
 ) {
 
-      //Assing auth header to const and give default value if its not in the request
+      //Assign auth header to const and give default value if its not in the request
       const authHeader = req.headers.authorization ? req.headers.authorization : "";
 
       //Check if auth header is correct length

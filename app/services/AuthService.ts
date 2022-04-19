@@ -49,7 +49,7 @@ export const AuthService = {
   getAuthToken(authHeader: String) {
       const authToken = authHeader && authHeader.split(' ')[1]
       return authToken
-  },
+    },
 
  
   /**
