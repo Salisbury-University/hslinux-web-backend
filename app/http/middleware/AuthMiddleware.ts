@@ -36,12 +36,25 @@ export default async function (
         return next(new UnauthorizedException());
       }
 
+
+      /*
+        Decode jwt to check for
+        1. Modification after allocation
+        2. Expired jwt 
+        decodedJWT function returns null if either condition is true
+      */
+      if (!AuthService.decodeJWT(token)){
+        return next(new UnauthorizedException());
+      } 
+
+      //Verify user credentials from decoded jwt by attempting to login
+      try{
+        const decodeBody = AuthService.decodeJWT(token);
+        AuthService.login(decodeBody.uid, decodeBody.password);
+      } catch(err){
+        return next(err);
+      }
       
-
-      //Check if token if malformed
-
-      //Check if token has been modified after allocation
-
   
 
 
