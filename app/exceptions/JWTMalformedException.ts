@@ -10,3 +10,5 @@ export default class NotFoundException extends BaseException {
     super(message, 400);
   }
 }
+
+//TODO - Find appropriate status code

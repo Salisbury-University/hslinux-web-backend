@@ -1,8 +1,8 @@
 import express from "express";
 import { AuthController } from "../http/controllers/AuthController";
 
-//Import validation middleware and login schema 
-import validate from "../http/middleware/ValidationMiddleware"
+//Import validation middleware and login schema
+import validate from "../http/middleware/ValidationMiddleware";
 import AuthLoginSchema from "../schema/AuthLoginPost";
 
 const AuthRouter = express.Router();
@@ -10,7 +10,12 @@ const AuthRouter = express.Router();
 import AuthMiddleware from "../http/middleware/AuthMiddleware";
 // Everywhere below here will require authentication.
 
-AuthRouter.post('/login', validate(AuthLoginSchema), AuthMiddleware, AuthController.login);
+AuthRouter.post(
+  "/login",
+  validate(AuthLoginSchema),
+  AuthMiddleware,
+  AuthController.login
+);
 
-AuthRouter.post('/logout', AuthController.logout)
+AuthRouter.post("/logout", AuthController.logout);
 export default AuthRouter;

@@ -7,5 +7,6 @@ import auth from "./auth";
 
 /** Configuration loaded from ``config/`` & environmental variables */
 export const config = {
-  app, auth
+  app,
+  auth,
 };

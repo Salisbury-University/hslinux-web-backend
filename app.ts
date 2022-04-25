@@ -17,7 +17,6 @@ app.use("/", indexRouter);
 
 app.use("/api/v1/auth", authRouter);
 
-
 /** Using a custom error handler */
 import ExceptionHandler from "./app/exceptions/ExceptionHandler";
 app.use(ExceptionHandler);
