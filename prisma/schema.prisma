@@ -36,5 +36,11 @@ model User {
 }
 
 model Document {
-  id String @unique
+  id          String   @unique
+  title       String
+  description String
+  author      String
+  group       String
+  created     DateTime
+  updatedAt   DateTime
 }
