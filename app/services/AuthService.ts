@@ -1,5 +1,4 @@
 import axios from "axios";
-import jwt from "jsonwebtoken";
 import UnauthorizedException from "../exceptions/UnauthorizedException";
 import { config } from "../../config";
 import { nextTick } from "process";
@@ -12,17 +11,6 @@ import { NextFunction } from "express";
  * An example of an authorization service to validate authorization tokens, or attempt sign ins.
  */
 export const AuthService = {
-  /**
-   * Decodes jwt returning jwt payload and header
-   *
-   * @param token
-   * @returns jwt payload containing username and password if token is valid
-   * @returns null if jwt is invalid
-   */
-  decodeJWT(token: String) {
-    const decoded = jwt.decode(token);
-    return decoded;
-  },
 
   /**
    * Validates an authorization token for authentication.
@@ -97,6 +85,6 @@ export const AuthService = {
    * @return http code 200 for success
    */
   async logout(req, res) {
-    //IN FUTURE: Make API call to invalidate the token
+    //TODO Make API call to invalidate the token from logout function
   },
 };
