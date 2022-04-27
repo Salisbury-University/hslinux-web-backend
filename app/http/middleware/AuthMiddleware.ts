@@ -52,6 +52,9 @@ export default async function (
   try {
     const decodeBody = jwt.decode(token);
     //MAKE SURE DECODEBODY IS NOT NULL
+    if(!decodeBody) {
+      return next(new JWTMalformedException());
+    }
     AuthService.login(decodeBody.uid, decodeBody.password);
   } catch (err) {
     return next(err);

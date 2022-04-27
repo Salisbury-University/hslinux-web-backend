@@ -1,8 +1,6 @@
 import axios from "axios";
 import UnauthorizedException from "../exceptions/UnauthorizedException";
 import { config } from "../../config";
-import { nextTick } from "process";
-import { NextFunction } from "express";
 
 
 //TODO - Consider throwing errors instead of returning true/false

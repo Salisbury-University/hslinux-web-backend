@@ -1,5 +1,5 @@
 /**
- *
+ * The URL for the LDAP server we're authentication our requests against
  */
 
 export default {
