@@ -21,8 +21,8 @@ export const DocumentController = {
 
   /**
    * Sends Request and Response to multiDocPaged() Service
-   * @param req Request Request object
-   * @param res Response Response object
+   * @param req Express Request object
+   * @param res Express Response object
    * @param next Next Controller
    * @returns
    */
@@ -32,6 +32,13 @@ export const DocumentController = {
     return next;
   },
 
+  /**
+   * Sends REquest and Response to singleDoc service
+   * @param req Express Request object
+   * @param res Express Response object
+   * @param next Next Controller
+   * @returns
+   */
   async singleDocPaged(req: Request, res: Response, next: NextFunction) {
     console.log("In DocController: Single Page");
     await DocumentService.singleDoc(req, res);

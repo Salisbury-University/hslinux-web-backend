@@ -88,16 +88,27 @@ export const DocumentService = {
     res.send(documents);
   },
 
+  /**
+   * Takes the id from the request and looks for it in database
+   * If the document is not there, sends a '404 Not Found' status.
+   * If the document is found, sends id, content, and metadata to Body
+   * @param req Express Request
+   * @param res Express Response
+   */
   async singleDoc(req, res) {
     var id = req.params.id;
+
+    //Finds document in database using ID
     const doc = await prisma.document.findUnique({
       where: {
         id: id,
       },
     });
     if (!doc) {
+      //document not found
       res.sendStatus(404);
     } else {
+      //document found
       res.send({
         id: id,
         content: "",
