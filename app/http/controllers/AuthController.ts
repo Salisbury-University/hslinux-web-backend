@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { nextTick } from "process";
 import { AuthService } from "../../services/AuthService";
 
 /**
@@ -44,4 +45,15 @@ export const AuthController = {
 
     return next();
   },
+
+  async test(next: NextFunction) {
+    try {
+      await AuthService.test();
+    } catch(err) {
+      return next(err)
+    }
+
+    return next();
+  },
+
 };

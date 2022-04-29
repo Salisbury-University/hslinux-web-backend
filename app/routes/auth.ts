@@ -14,5 +14,7 @@ AuthRouter.post("/login", validate(AuthLoginSchema), AuthController.login);
 
 AuthRouter.use(AuthMiddleware);
 
+AuthRouter.get("/test", AuthController.test)
+
 AuthRouter.post("/logout", AuthController.logout);
 export default AuthRouter;

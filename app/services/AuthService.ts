@@ -1,6 +1,7 @@
 import axios from "axios";
 import UnauthorizedException from "../exceptions/UnauthorizedException";
 import { config } from "../../config";
+import { string } from "zod";
 
 
 //TODO - Consider throwing errors instead of returning true/false
@@ -84,5 +85,14 @@ export const AuthService = {
    */
   async logout(req, res) {
     //TODO Make API call to invalidate the token from logout function
+  },
+
+  /**
+   * Current route used for unit testing of the AuthMiddleware
+   * @param req 
+   * @param res 
+   */
+  async test() {
+
   },
 };
