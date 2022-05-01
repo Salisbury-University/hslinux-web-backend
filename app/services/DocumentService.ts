@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-const { marked } = require("marked");
+import * as parse from '../../mark'
 const prisma = new PrismaClient();
 
 /**
@@ -7,21 +7,15 @@ const prisma = new PrismaClient();
  * from the database
  */
 export const DocumentService = {
-  /**
-   * Grabs all of the documents from the database and sends the document
+  
+    /**
+   * Grabs all of the documents and sends the document
    * IDs to the JSON Body
-   * @param req
-   * @param res
+   * @param req Express Request 
+   * @param res Express Response
    */
   async multiDoc(req, res) {
-    /**
-     * Gets all the documents from database and sorts them by ascending
-     */
-    const prismaDocs = await prisma.document.findMany({
-      orderBy: {
-        id: "asc",
-      },
-    });
+      const documents = parse.parseFrontmatter();
 
     /**
      * Body to add the document IDs to
@@ -33,13 +27,14 @@ export const DocumentService = {
     /**
      * Loops through retrieved documents and pushes Document IDs
      * into docs property of documentList
+     * 
+     * Later on, we'll need to check if we have access to this document
      */
-    for (let i = 0; i < prismaDocs.length; i++) {
-      documentList.docs.push(prismaDocs[i].id);
+    for (const id of Object.keys(documents)) {
+      documentList.docs.push(id);
     }
 
     //Send the list of Document IDs to Body
-    console.log();
     res.send(documentList);
   },
 
@@ -52,73 +47,71 @@ export const DocumentService = {
    * @param res
    */
   async multiDocPaged(req, res) {
-    //Page number from request
+    /** Page number from request */
     var page = req.params.page;
+    const documents = parse.parseFrontmatter();
 
-    /**
-     * Gets documents from database from a certain page and orders them by ascending
-     * Page 1 takes documents 1-10,
-     * Page 2 takes documents 11-20,
-     * etc.
-     */
-    const prismaDocs = await prisma.document.findMany({
-      skip: (page - 1) * 10,
-      take: 10,
-      orderBy: {
-        id: "asc",
-      },
-    });
+    const skip = (page - 1) * 10;
+    const take = 10;
+    
 
     /**
      * Body to add the document IDs to
      */
-    const documents = {
+    const documentList = {
       docs: [],
     };
 
     /**
      * Loops through retrieved documents and pushes Document IDs
      * into docs property of documentList
+     * 
+     * Later on, we'll need to check if we have access to this document
      */
-    for (let i = 0; i < prismaDocs.length; i++) {
-      documents.docs.push(prismaDocs[i].id);
+    var index = 0, docCount = 0;
+    for (const id of Object.keys(documents)) {
+        if(index >= skip && docCount <= 10){
+            documentList.docs.push(id);
+            docCount++;
+        }
+        index++;
     }
 
     //Sends list of Document IDs to JSON Body
-    res.send(documents);
+    res.send(documentList);
   },
 
   /**
-   * Takes the id from the request and looks for it in database
+   * Takes the id from the request and looks for it in the
+   * dictionary object
    * If the document is not there, sends a '404 Not Found' status.
    * If the document is found, sends id, content, and metadata to Body
    * @param req Express Request
    * @param res Express Response
    */
   async singleDoc(req, res) {
+    const docsObj = parse.parseFrontmatter();
+    //console.log(docsObj)
     var id = req.params.id;
 
-    //Finds document in database using ID
-    const doc = await prisma.document.findUnique({
-      where: {
-        id: id,
-      },
-    });
-    if (!doc) {
-      //document not found
-      res.sendStatus(404);
-    } else {
-      //document found
+    /** Finds document in database using ID */
+    const document = docsObj[id];
+    
+    if (!document) { //document not found
+      res.sendStatus(404); 
+    }else { //document found
+      
       res.send({
         id: id,
-        content: "",
+        content: document.content,
         metadata: {
-          dateCreated: doc.created,
-          dateUpdated: doc.updatedAt,
-          privilege: doc.group,
-          author: doc.author,
+            "dateCreated": document.createdDate,
+            "dateUpdated": document.updatedDate,
+            "privilege": document.group,
+            "author": document.author,
         },
       });
     }
+    
   },
 };

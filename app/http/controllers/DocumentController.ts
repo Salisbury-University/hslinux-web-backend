@@ -14,8 +14,7 @@ export const DocumentController = {
    * @returns
    */
   async multiDoc(req: Request, res: Response, next: NextFunction) {
-    console.log("IN DOC CONTROLLER: multiDoc()");
-    await DocumentService.multiDoc(req, res);
+    DocumentService.multiDoc(req, res);
     return next;
   },
 
@@ -27,21 +26,19 @@ export const DocumentController = {
    * @returns
    */
   async multiDocPaged(req: Request, res: Response, next: NextFunction) {
-    console.log("IN DOC CONTROLLER: multiDocPaged()");
-    await DocumentService.multiDocPaged(req, res);
+    DocumentService.multiDocPaged(req, res);
     return next;
   },
 
   /**
-   * Sends REquest and Response to singleDoc service
+   * Sends Request and Response to singleDoc service
    * @param req Express Request object
    * @param res Express Response object
    * @param next Next Controller
    * @returns
    */
   async singleDocPaged(req: Request, res: Response, next: NextFunction) {
-    console.log("In DocController: Single Page");
-    await DocumentService.singleDoc(req, res);
+    DocumentService.singleDoc(req, res);
     return next;
   },
 };
