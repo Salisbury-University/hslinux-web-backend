@@ -1,5 +1,6 @@
 import axios from "axios";
 import UnauthorizedException from "../exceptions/UnauthorizedException";
+import JWTMalformedException from "../exceptions/JWTMalformedException";
 import { config } from "../../config";
 import { string } from "zod";
 
@@ -15,29 +16,27 @@ export const AuthService = {
    * Validates an authorization token for authentication.
    *
    * @param token Authorization token attached to the HTTP header.
-   * @return {boolean} True if their token is valid, false if it isn't.
+   * @throws JWTMalformedException if token has length of zero
    */
 
-  validate(token: String): boolean {
-    if (token.length != 0) {
-      return true;
+  validate(token: String) {
+    if (token.length == 0) {
+      throw new JWTMalformedException;
     }
-    return false;
   },
 
   /**
    * Checks Authorization Header to make sure its a bearer token
    *
    * @param authHeader  authorization header
-   * @returns true if auth header is bearer token
+   * @throws Unauthorized Exception if authHader is not bearer
    */
   checkBearer(authHeader: String) {
     const authType = authHeader && authHeader.split(" ")[0];
 
-    if (authType == "Bearer") {
-      return authType;
+    if (authType != "Bearer") {
+      throw new UnauthorizedException();
     }
-    return null;
   },
 
   /**
@@ -45,10 +44,16 @@ export const AuthService = {
    *
    * @param req {Request} express request object
    * @returns auth token
+   * @throws UnauthorizedException if token is null after authHeader split
    */
   getAuthToken(authHeader: String) {
     const authToken = authHeader && authHeader.split(" ")[1];
-    return authToken;
+    if(!authToken) {
+      throw new UnauthorizedException();
+    }
+    else {
+      return authToken;
+    }
   },
 
   /**
@@ -56,7 +61,8 @@ export const AuthService = {
    *
    * @param uid {String} User id string
    * @param res {String} password string
-   * @return token if successful
+   * @return token if successful login is made
+   * @throws UnauthorizedException if LDAP Authentication fails
    */
   async login(uid: string, password: string) {
     //Make post request to api using axios

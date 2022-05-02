@@ -3,6 +3,7 @@ import { AuthService } from "../../services/AuthService";
 import UnauthorizedException from "../../exceptions/UnauthorizedException";
 import JWTMalformedException from "../../exceptions/JWTMalformedException";
 import jwt from "jsonwebtoken";
+import { nextTick } from "process";
 
 
 /**
@@ -17,46 +18,45 @@ export default async function (
   res: Response,
   next: NextFunction
 ) {
-  //Assign auth header to const and give default value if its not in the request
-  const authHeader = req.headers.authorization ? req.headers.authorization : "";
 
-  //Pull token from authHeader for testing in other functions
-  const token = AuthService.getAuthToken(authHeader);
+  try {
+    
+    //Assign auth header to const and give default value if its not in the request
+    const authHeader = req.headers.authorization ? req.headers.authorization : "";
 
-  //Call validate function to make sure there is an existing jwt
-  if (!AuthService.validate(token)) {
-    return next(new JWTMalformedException());
-  }
+    const token = AuthService.getAuthToken(authHeader);
+  
+    //Call validate function to make sure there is an existing jwt
+    AuthService.validate(token)
+    
+    //Check if auth header is correct length
+    if (authHeader.split(" ").length > 2) {
+      return next(new UnauthorizedException());
+    }
 
-  //Check if auth header is correct length
-  if (authHeader.split(" ").length > 2) {
-    return next(new UnauthorizedException());
-  }
+    //Check if token is bearer
+    AuthService.checkBearer(authHeader);  
 
-  //Check if token is bearer
-  if (!AuthService.checkBearer(authHeader)) {
-    return next(new UnauthorizedException());
-  }
-
-  /*
+    /*
         Decode jwt to check for
         1. Modification after allocation
         2. Expired jwt 
         decodedJWT function returns null if either condition is true
       */
-  if (!jwt.decode(token)) {
-    return next(new JWTMalformedException());
-  }
+    if (!jwt.decode(token)) {
+      return next(new JWTMalformedException());
+    }
 
-  //Verify user credentials from decoded jwt by attempting to login
-  try {
+    //Verify user credentials from decoded jwt by attempting to login
     const decodeBody = jwt.decode(token);
     //MAKE SURE DECODEBODY IS NOT NULL
     if(!decodeBody) {
       return next(new JWTMalformedException());
     }
+    //Attempt to make login request to see if user is valid
     AuthService.login(decodeBody.uid, decodeBody.password);
-  } catch (err) {
+
+  } catch(err) {
     return next(err);
   }
 
