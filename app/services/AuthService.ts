@@ -35,9 +35,9 @@ export const AuthService = {
     const authType = authHeader && authHeader.split(" ")[0];
 
     if (authType == "Bearer") {
-      return true;
+      return authType;
     }
-    return false;
+    return null;
   },
 
   /**
