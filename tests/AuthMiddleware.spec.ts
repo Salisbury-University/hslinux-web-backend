@@ -63,7 +63,7 @@ test.group("AuthMiddleware", (group) => {
       AuthService.test();
 
     } catch (err) {
-      expect(err).toBeInstanceOf(JWTMalformedException);
+      expect(err).toBeInstanceOf(UnauthorizedException);
       done();
     }
   }).waitForDone();
@@ -90,7 +90,7 @@ test.group("AuthMiddleware", (group) => {
       AuthService.test();
 
     } catch (err) {
-      expect(err).toBeInstanceOf(JWTMalformedException);
+      expect(err).toBeInstanceOf(UnauthorizedException);
       done();
     }
   }).waitForDone();
