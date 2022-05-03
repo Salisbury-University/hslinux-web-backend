@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import * as parse from '../../mark'
+import { getFrontmatter } from "../../mark";
 const prisma = new PrismaClient();
 
 /**
@@ -7,15 +7,14 @@ const prisma = new PrismaClient();
  * from the database
  */
 export const DocumentService = {
-  
-    /**
+  /**
    * Grabs all of the documents and sends the document
    * IDs to the JSON Body
-   * @param req Express Request 
+   * @param req Express Request
    * @param res Express Response
    */
   async multiDoc(req, res) {
-      const documents = parse.parseFrontmatter();
+    const documents = getFrontmatter();
 
     /**
      * Body to add the document IDs to
@@ -27,7 +26,7 @@ export const DocumentService = {
     /**
      * Loops through retrieved documents and pushes Document IDs
      * into docs property of documentList
-     * 
+     *
      * Later on, we'll need to check if we have access to this document
      */
     for (const id of Object.keys(documents)) {
@@ -46,14 +45,11 @@ export const DocumentService = {
    * @param req
    * @param res
    */
-  async multiDocPaged(req, res) {
-    /** Page number from request */
-    var page = req.params.page;
-    const documents = parse.parseFrontmatter();
+  async multiDocPaged(page, res) {
+    const documents = getFrontmatter();
 
     const skip = (page - 1) * 10;
-    const take = 10;
-    
+    console.log("page: " + page);
 
     /**
      * Body to add the document IDs to
@@ -65,16 +61,17 @@ export const DocumentService = {
     /**
      * Loops through retrieved documents and pushes Document IDs
      * into docs property of documentList
-     * 
+     *
      * Later on, we'll need to check if we have access to this document
      */
-    var index = 0, docCount = 0;
+    var index = 0,
+      docCount = 0;
     for (const id of Object.keys(documents)) {
-        if(index >= skip && docCount <= 10){
-            documentList.docs.push(id);
-            docCount++;
-        }
-        index++;
+      if (index >= skip && docCount <= 10) {
+        documentList.docs.push(id);
+        docCount++;
+      }
+      index++;
     }
 
     //Sends list of Document IDs to JSON Body
@@ -89,29 +86,30 @@ export const DocumentService = {
    * @param req Express Request
    * @param res Express Response
    */
-  async singleDoc(req, res) {
-    const docsObj = parse.parseFrontmatter();
-    //console.log(docsObj)
-    var id = req.params.id;
+  async singleDoc(id, res) {
+    const docsObj = getFrontmatter();
 
-    /** Finds document in database using ID */
+    /** Finds document in database using ID
+     *  Move this to controller once mark.ts
+     * is set up right
+     */
     const document = docsObj[id];
-    
-    if (!document) { //document not found
-      res.sendStatus(404); 
-    }else { //document found
-      
+    if (!document) {
+      //document not found,
+      res.sendStatus(404);
+    } else {
+      //document found
+
       res.send({
         id: id,
         content: document.content,
         metadata: {
-            "dateCreated": document.createdDate,
-            "dateUpdated": document.updatedDate,
-            "privilege": document.group,
-            "author": document.author,
+          dateCreated: document.createdDate,
+          dateUpdated: document.updatedDate,
+          privilege: document.group,
+          author: document.author,
         },
       });
     }
-    
   },
 };

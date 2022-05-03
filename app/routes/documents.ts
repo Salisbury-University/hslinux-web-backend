@@ -10,5 +10,5 @@ router.get("/api/v1/docs", DocumentController.multiDoc);
 router.get("/api/v1/docs/:page", DocumentController.multiDocPaged);
 
 //Router for fetching a single document
-router.get("/api/v1/doc/:id", DocumentController.singleDocPaged);
+router.get("/api/v1/doc/:id", DocumentController.singleDoc);
 export default router;

@@ -14,7 +14,8 @@ export const DocumentController = {
    * @returns
    */
   async multiDoc(req: Request, res: Response, next: NextFunction) {
-    DocumentService.multiDoc(req, res);
+    var id = req.params.id; //Check if document exists here before sent to service
+    await DocumentService.multiDoc(id, res);
     return next;
   },
 
@@ -26,7 +27,8 @@ export const DocumentController = {
    * @returns
    */
   async multiDocPaged(req: Request, res: Response, next: NextFunction) {
-    DocumentService.multiDocPaged(req, res);
+    var page = req.params.page; //Check if document exists here before sent to service
+    await DocumentService.multiDocPaged(page, res);
     return next;
   },
 
@@ -36,9 +38,11 @@ export const DocumentController = {
    * @param res Express Response object
    * @param next Next Controller
    * @returns
+   * only pass needed req body
    */
-  async singleDocPaged(req: Request, res: Response, next: NextFunction) {
-    DocumentService.singleDoc(req, res);
+  async singleDoc(req: Request, res: Response, next: NextFunction) {
+    var id = req.params.id; //Check if document exists here before sent to service
+    await DocumentService.singleDoc(id, res);
     return next;
   },
 };
