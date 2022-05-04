@@ -3,6 +3,7 @@ import UnauthorizedException from "../exceptions/UnauthorizedException";
 import JWTMalformedException from "../exceptions/JWTMalformedException";
 import { config } from "../../config";
 import { string } from "zod";
+import e from "express";
 
 
 //TODO - Consider throwing errors instead of returning true/false
@@ -35,7 +36,9 @@ export const AuthService = {
     const authType = authHeader && authHeader.split(" ")[0];
 
     if (authType != "Bearer") {
-      throw new UnauthorizedException();
+      throw new JWTMalformedException();
+    } else {
+      return authType;
     }
   },
 
@@ -78,7 +81,7 @@ export const AuthService = {
         return response.data.token;
       })
       .catch((err) => {
-        throw new UnauthorizedException("LDAP Authentication Failed");
+        throw new JWTMalformedException();
       });
   },
 

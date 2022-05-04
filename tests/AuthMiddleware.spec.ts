@@ -40,10 +40,12 @@ test.group("AuthMiddleware", (group) => {
       AuthService.test();
 
     } catch (err) {
-      expect(err).toBeInstanceOf(UnauthorizedException);
+      expect(err).toBeInstanceOf(JWTMalformedException);
     }
 
   })
+
+
   //Test for modified or invalid token
   test("AuthMiddlware Modified/Invalid Token", async ({ expect }, done: Function) => { 
     const username = "cxarausa"
@@ -51,19 +53,19 @@ test.group("AuthMiddleware", (group) => {
 
     const token = AuthService.login(username, password)
 
-    const authHeader = <string>token;
-    //Modify the JWT
-    const authToken = authHeader && authHeader.split(" ")[1];
-
-    //Concat a string onto the end of the header to simulate a modified JWT
-    authToken.concat(".")
-
-    //Make post request to login route to run middleware
     try {
+      const authHeader = <string>token;
+      //Modify the JWT
+      const authToken = AuthService.getAuthToken(authHeader);
+
+      //Concat a string onto the end of the header to simulate a modified JWT
+      authToken.concat(".")
+
+      //Make post request to login route to run middleware
       AuthService.test();
 
     } catch (err) {
-      expect(err).toBeInstanceOf(UnauthorizedException);
+      expect(err).toBeInstanceOf(JWTMalformedException);
       done();
     }
   }).waitForDone();
@@ -80,7 +82,7 @@ test.group("AuthMiddleware", (group) => {
 
     const authHeader = <string>token;
     //Modify the JWT
-    const authToken = authHeader && authHeader.split(" ")[1];
+    const authToken = AuthService.checkBearer(authHeader);
 
     //Concat a string onto the end of the header to simulate a modified JWT
     authToken.concat(".")
@@ -94,6 +96,7 @@ test.group("AuthMiddleware", (group) => {
       done();
     }
   }).waitForDone();
+
 
   //Test valid JWT
   test("AuthMiddlware Valid JWT", async ({ expect }, done: Function) => { 
