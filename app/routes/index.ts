@@ -15,5 +15,11 @@ router.get("/", IndexController.index);
 // Example route for input validation that expects a JSON with a message string
 router.post("/", IndexController.index);
 
+// Import auth router
+import AuthRouter from "./auth";
+
+router.use("/api/v1/auth", AuthRouter);
+
+
 // Export the router
 export default router;

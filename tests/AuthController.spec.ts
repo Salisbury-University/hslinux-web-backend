@@ -48,7 +48,6 @@ test.group("AuthController", (group) => {
         const { message } = body;
 
         expect(message).toBe("LDAP Authentication Failed");
-
         done();
       });
   }).waitForDone();

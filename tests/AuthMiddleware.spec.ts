@@ -12,8 +12,14 @@ import { doesNotMatch } from "assert";
 
 
 test.group("AuthMiddleware", (group) => {
+  
+  const username = "cxarausa"
+  const password = "testing"
+  const invalid_token = "BadToken"
+  const valid_token = AuthService.login(username, password);
+  
   group.setup(async () => {
-   
+
   });
 
   group.teardown(async () => {
@@ -22,93 +28,45 @@ test.group("AuthMiddleware", (group) => {
   });
 
   //Test for missing auth header
-  test("AuthMiddlware Missing Header", async ({ expect }, done: Function) => {
-    const username = "cxarausa"
-    const password = "testing"
+  test("AuthMiddlware Invalid JWT", async ({ expect }, done: Function) => {
+    
+    request(app)
+      .get("/api/v1/auth/test")
+      .set("Accept", "application/json")
+        .set("Authorization", "Bearer " + invalid_token)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toHaveProperty("message");
 
-    const token = AuthService.login(username, password)
+        const { message } = body;
 
-    const authHeader = <string>token;
-    //Modify the Bearer header to no simulate a non bearer token case
-    const authType = authHeader && authHeader.split(" ")[0];
+        expect(message).toBe("JWT Malformed");
 
-    //Concat a string onto the end of the header to simulate a non bearer token
-    authType.concat(".")
-
-    //Make post request to login route to run middleware
-    try {
-      AuthService.test();
-
-    } catch (err) {
-      expect(err).toBeInstanceOf(JWTMalformedException);
-    }
-
-  })
-
-
-  //Test for modified or invalid token
-  test("AuthMiddlware Modified/Invalid Token", async ({ expect }, done: Function) => { 
-    const username = "cxarausa"
-    const password = "testing"
-
-    const token = AuthService.login(username, password)
-
-    try {
-      const authHeader = <string>token;
-      //Modify the JWT
-      const authToken = AuthService.getAuthToken(authHeader);
-
-      //Concat a string onto the end of the header to simulate a modified JWT
-      authToken.concat(".")
-
-      //Make post request to login route to run middleware
-      AuthService.test();
-
-    } catch (err) {
-      expect(err).toBeInstanceOf(JWTMalformedException);
-      done();
-    }
+        done();
+      });
   }).waitForDone();
-
-  //Test for expired JWT
-  test("AuthMiddlware Expired JWT", async ({ expect }, done: Function) => {  })
-
-  //Test for null body after decode
-  test("AuthMiddlware Bad JWT Decode", async ({ expect }, done: Function) => { 
-    const username = "cxarausa"
-    const password = "testing"
-
-    const token = AuthService.login(username, password)
-
-    const authHeader = <string>token;
-    //Modify the JWT
-    const authToken = AuthService.checkBearer(authHeader);
-
-    //Concat a string onto the end of the header to simulate a modified JWT
-    authToken.concat(".")
-
-    //Make post request to login route to run middleware
-    try {
-      AuthService.test();
-
-    } catch (err) {
-      expect(err).toBeInstanceOf(UnauthorizedException);
-      done();
-    }
-  }).waitForDone();
-
 
   //Test valid JWT
   test("AuthMiddlware Valid JWT", async ({ expect }, done: Function) => { 
     const username = "cxarausa"
     const password = "testing"
 
-    const token = AuthService.login(username, password)
+    
+    request(app)
+    .get("/api/v1/auth/test")
+    .set("Accept", "application/json")
+      .set("Authorization", "Bearer " + valid_token)
+    .expect(400)
+    .then(({ body }) => {
+      expect(body).toHaveProperty("message");
 
-    AuthService.test();
-    done();
+      const { message } = body;
+
+      expect(message).toBe("JWT Malformed");
+
+      done();
+    });
   }).waitForDone();
-  
 
 });
 

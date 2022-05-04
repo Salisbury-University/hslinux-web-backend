@@ -2,6 +2,7 @@ import axios from "axios";
 import UnauthorizedException from "../exceptions/UnauthorizedException";
 import JWTMalformedException from "../exceptions/JWTMalformedException";
 import { config } from "../../config";
+import jwt from "jsonwebtoken";
 import { string } from "zod";
 import e from "express";
 
@@ -14,49 +15,53 @@ import e from "express";
 export const AuthService = {
 
   /**
-   * Validates an authorization token for authentication.
+   * Validates an authorization token for authentication by decoding jwt
+   * and attempting a login request with decoded body
    *
    * @param token Authorization token attached to the HTTP header.
    * @throws JWTMalformedException if token has length of zero
    */
 
-  validate(token: String) {
-    if (token.length == 0) {
-      throw new JWTMalformedException;
+  validate(authHeader: String) {
+    //Grab token from header
+    const authToken = authHeader && authHeader.split(" ")[1];
+
+    //Verify user credentials from decoded jwt by attempting to login
+    const decodeBody = jwt.decode(authToken);
+    //MAKE SURE DECODEBODY IS NOT NULL
+    if(!decodeBody) {
+      throw new JWTMalformedException();
     }
+    //Attempt to make login request to see if user is valid
+    AuthService.login(decodeBody.uid, decodeBody.password);
+    
   },
 
   /**
-   * Checks Authorization Header to make sure its a bearer token
+   * Checks Authorization Header to make sure its a bearer token and the token is there
    *
    * @param authHeader  authorization header
    * @throws Unauthorized Exception if authHader is not bearer
    */
   checkBearer(authHeader: String) {
+   
+    //Check if auth header is correct length
+    if (authHeader.split(" ").length > 2) {
+      throw new UnauthorizedException();
+    }
+   
     const authType = authHeader && authHeader.split(" ")[0];
 
     if (authType != "Bearer") {
       throw new JWTMalformedException();
-    } else {
-      return authType;
     }
-  },
 
-  /**
-   * Pull JWT from authorization header
-   *
-   * @param req {Request} express request object
-   * @returns auth token
-   * @throws UnauthorizedException if token is null after authHeader split
-   */
-  getAuthToken(authHeader: String) {
     const authToken = authHeader && authHeader.split(" ")[1];
+
     if(!authToken) {
       throw new UnauthorizedException();
     }
-    else {
-      return authToken;
-    }
+
   },
 
   /**
@@ -81,7 +86,7 @@ export const AuthService = {
         return response.data.token;
       })
       .catch((err) => {
-        throw new JWTMalformedException();
+        throw new UnauthorizedException();
       });
   },
 
