@@ -1,7 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthService } from "../../services/AuthService";
-import UnauthorizedException from "../../exceptions/UnauthorizedException";
-import JWTMalformedException from "../../exceptions/JWTMalformedException";
 import { nextTick } from "process";
 
 
