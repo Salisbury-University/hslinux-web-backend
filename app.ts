@@ -25,8 +25,9 @@ import ExampleMiddleware from "./app/http/middleware/ExampleMiddleware";
 import ExceptionHandler from "./app/exceptions/ExceptionHandler";
 app.use(ExceptionHandler);
 
-/** Parse through frontmatter to be stored on server start */
+/** Parse through frontmatter to be stored on server start and then every 3 minutes */
 import { parseFrontmatter } from "./mark";
 parseFrontmatter();
+setInterval(parseFrontmatter, 180000);
 
 export { app, config };
