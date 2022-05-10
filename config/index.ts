@@ -2,8 +2,11 @@
 import "dotenv/config";
 // Import configuration objects
 import app from "./app";
+// Import auth configuration
+import auth from "./auth";
 
 /** Configuration loaded from ``config/`` & environmental variables */
 export const config = {
   app,
+  auth,
 };
