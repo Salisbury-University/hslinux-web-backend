@@ -37,6 +37,7 @@ export const AuthController = {
   async logout(req: Request, res: Response, next: NextFunction) {
     try {
       await AuthService.logout(req, res);
+      res.sendStatus(200);
     } catch (err) {
       return next(err);
     }

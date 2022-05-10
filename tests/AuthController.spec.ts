@@ -47,7 +47,7 @@ test.group("AuthController", (group) => {
         //Extract message to verify its the correct message
         const { message } = body;
 
-        expect(message).toBe("LDAP Authentication Failed");
+        expect(message).toBe("Unauthorized Access");
         done();
       });
   }).waitForDone();

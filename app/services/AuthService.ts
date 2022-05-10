@@ -48,7 +48,7 @@ export const AuthService = {
     const authType = authHeader.split(" ")[0];
 
     if (authType != "Bearer") {
-      throw new JWTMalformedException();
+      throw new UnauthorizedException();
     }
 
     const authToken = authHeader && authHeader.split(" ")[1];
