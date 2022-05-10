@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { getFrontmatter } from "../../mark";
-const prisma = new PrismaClient();
+import DocumentNotFoundException from "../exceptions/DocumentException";
 
 /**
  * Service for Document that has functions to fetch the documents
@@ -13,12 +12,10 @@ export const DocumentService = {
    * @param req Express Request
    * @param res Express Response
    */
-  async multiDoc(req, res) {
+  async multiDoc(res) {
     const documents = getFrontmatter();
 
-    /**
-     * Body to add the document IDs to
-     */
+    /** Body to add the document IDs to */
     const documentList = {
       docs: [],
     };
@@ -48,12 +45,10 @@ export const DocumentService = {
   async multiDocPaged(page, res) {
     const documents = getFrontmatter();
 
+    /** Skips this number of documents */
     const skip = (page - 1) * 10;
-    console.log("page: " + page);
 
-    /**
-     * Body to add the document IDs to
-     */
+    /** Body to add the document IDs to */
     const documentList = {
       docs: [],
     };
@@ -63,6 +58,7 @@ export const DocumentService = {
      * into docs property of documentList
      *
      * Later on, we'll need to check if we have access to this document
+     * with group attribute
      */
     var index = 0,
       docCount = 0;
@@ -74,7 +70,7 @@ export const DocumentService = {
       index++;
     }
 
-    //Sends list of Document IDs to JSON Body
+    /** Sends list of Document IDs to JSON Body */
     res.send(documentList);
   },
 
@@ -95,19 +91,24 @@ export const DocumentService = {
      */
     const document = docsObj[id];
     if (!document) {
-      //document not found,
-      res.sendStatus(404);
+      //document not found
+      try {
+        throw new DocumentNotFoundException("Document Not Found", 404, res);
+      } catch (error) {
+        console.log(error);
+      }
     } else {
       //document found
-
       res.send({
         id: id,
         content: document.content,
         metadata: {
+          title: document.title,
+          description: document.description,
+          author: document.author,
+          group: document.group,
           dateCreated: document.createdDate,
           dateUpdated: document.updatedDate,
-          privilege: document.group,
-          author: document.author,
         },
       });
     }
