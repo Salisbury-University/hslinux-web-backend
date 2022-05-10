@@ -7,6 +7,7 @@ import { NextFunction, Request, Response } from "express";
  * @param res {Response} Express response object
  * @param next {NextFunction} Express next function
  */
+
 export default async function (
   req: Request,
   res: Response,
