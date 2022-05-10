@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { nextTick } from "process";
 import { AuthService } from "../../services/AuthService";
 
 /**
@@ -21,7 +20,6 @@ export const AuthController = {
     try {
       const token = await AuthService.login(uid, password);
       res.send({ token });
-      //return next(token);
     } catch (err) {
       return next(err);
     }
@@ -41,16 +39,6 @@ export const AuthController = {
       await AuthService.logout(req, res);
     } catch (err) {
       return next(err);
-    }
-
-    return next();
-  },
-
-  async test(next: NextFunction) {
-    try {
-      await AuthService.test();
-    } catch(err) {
-      return next(err)
     }
 
     return next();

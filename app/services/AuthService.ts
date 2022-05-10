@@ -22,17 +22,14 @@ export const AuthService = {
 
   validate(authHeader: String) {
     //Grab token from header
-    const authToken = authHeader && authHeader.split(" ")[1];
+    const authToken = authHeader.split(" ")[1];
 
     //Verify user credentials from decoded jwt by attempting to login
     const decodeBody = jwt.decode(authToken);
     //MAKE SURE DECODEBODY IS NOT NULL
     if(!decodeBody) {
       throw new JWTMalformedException();
-    }
-    //Attempt to make login request to see if user is valid
-    AuthService.login(decodeBody.uid, decodeBody.password);
-    
+    }    
   },
 
   /**
@@ -48,7 +45,7 @@ export const AuthService = {
       throw new UnauthorizedException();
     }
    
-    const authType = authHeader && authHeader.split(" ")[0];
+    const authType = authHeader.split(" ")[0];
 
     if (authType != "Bearer") {
       throw new JWTMalformedException();
@@ -117,12 +114,4 @@ export const AuthService = {
     //TODO Make API call to invalidate the token from logout function
   },
 
-  /**
-   * Current route used for unit testing of the AuthMiddleware
-   * @param req 
-   * @param res 
-   */
-  async test() {
-
-  },
 };

@@ -5,7 +5,7 @@ import BaseException from "./BaseException";
  *
  * Contains a default error message and sets the HTTP response status.
  */
-export default class NotFoundException extends BaseException {
+export default class JWTMalformedException extends BaseException {
   constructor(message: string = "JWT Malformed") {
     super(message, 400);
   }

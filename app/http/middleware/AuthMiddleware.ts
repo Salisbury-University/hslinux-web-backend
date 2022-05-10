@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthService } from "../../services/AuthService";
-import { nextTick } from "process";
 
 
 /**
