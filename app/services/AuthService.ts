@@ -3,8 +3,6 @@ import UnauthorizedException from "../exceptions/UnauthorizedException";
 import JWTMalformedException from "../exceptions/JWTMalformedException";
 import { config } from "../../config";
 import jwt from "jsonwebtoken";
-import { string } from "zod";
-import e from "express";
 
 
 //TODO - Consider throwing errors instead of returning true/false
@@ -63,6 +61,24 @@ export const AuthService = {
     }
 
   },
+
+  /**
+   * Decodes JWT to return username so it can be attached to user request object
+   * @param token
+   * @returns decoded username
+   * @throws JWTMalformed exception of decode is invalid
+   */
+
+  decodeToken(authToken: String) {
+    const uid : JSON = jwt.decode(authToken);
+
+    if(!uid) {
+      throw new JWTMalformedException();
+    }
+
+    return uid;
+  },
+
 
   /**
    * Handles sign in attempts from users

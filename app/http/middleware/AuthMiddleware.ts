@@ -27,6 +27,9 @@ export default async function (
     //Call validate function to make sure there is an existing jwt
     AuthService.validate(authHeader)
 
+    //Attach username to request object by decoding token
+    req.user = AuthService.decodeToken(authHeader.split(" ")[1]);
+
   } catch(err) {
 
     return next(err);
