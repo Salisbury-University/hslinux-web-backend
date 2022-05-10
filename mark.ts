@@ -1,8 +1,5 @@
 const { marked } = require("marked");
 const fs = require("fs");
-const { PrismaClient } = require("@prisma/client");
-
-const prisma = new PrismaClient();
 
 /** Holds frontmatter and markdown from the .md files */
 const docs = new Object();
@@ -12,10 +9,10 @@ const docs = new Object();
  * @returns dictionary object
  */
 export function parseFrontmatter() {
-  /** reads all filenames in directory /docs */
+  /** All filenames in directory /docs */
   const filenames = fs.readdirSync("docs");
 
-  //Each document is tokenized and variables in the frontmatter are read and stored in database
+  /** Each document is tokenized and variables in the frontmatter are read and stored in database */
   filenames.forEach((file) => {
     if (file.endsWith(".md")) {
       //reads content of file and grabs the data from frontmatter
@@ -46,13 +43,20 @@ export function parseFrontmatter() {
         /** Group of the markdown file */
         const group = values[3].substring(8, values[3].length - 1);
 
-        const created = values[4].substring(9, values[4].length);
         /** Date the markdown file was created */
+        const created = values[4].substring(9, values[4].length);
         const createdDate = new Date(created);
 
-        const updated = values[5].substring(9, values[5].length);
         /** Date the markdown file was last updated */
+        const updated = values[5].substring(9, values[5].length);
         const updatedDate = new Date(updated);
+
+        /** Goes through the markdown file and stores everything except frontmatter in memory */
+        var dataWithoutFrontmatter = "";
+        const dataToken = marked.lexer(data);
+        for (var i = 3; i < dataToken.length; i++) {
+          dataWithoutFrontmatter = dataWithoutFrontmatter + dataToken[i].raw;
+        }
 
         docs[id] = {
           title: title,
@@ -61,13 +65,14 @@ export function parseFrontmatter() {
           group: group,
           createdDate: createdDate,
           updatedDate: updatedDate,
-          content: data,
+          content: dataWithoutFrontmatter,
         };
       });
     }
   });
 }
 
+/** returns docs object to be used in DocService */
 export function getFrontmatter() {
   return docs;
 }
