@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import PageException from "../../exceptions/PageException";
 import { DocumentService } from "../../services/DocumentService";
-import { getFrontmatter } from "../../../mark";
 
 /**
  * Controller for Routes for Fetching Documents
@@ -28,14 +27,14 @@ export const DocumentController = {
    * @returns
    */
   async multiDocPaged(req: Request, res: Response, next: NextFunction) {
-    var page = req.params.page; //Check if document exists here before sent to service
+    
+    let page = parseInt(req.params.page,10)
+    
     //also need to check if the page contains letters, since we dont want letters in the page parameter
-    if (page == "0") {
+    if (page < 1 ) {
       try {
-        throw new PageException("Page cannot be zero", res);
-      } catch (e) {
-        console.log(e);
-      }
+        throw new PageException("Page cannot be zero", 400, res);
+      } catch (e) {}
     } else {
       await DocumentService.multiDocPaged(page, res);
       return next;

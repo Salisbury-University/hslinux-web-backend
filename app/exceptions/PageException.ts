@@ -1,10 +1,11 @@
 import { Response } from "express";
-export default class PageException extends Error {
+import BaseException from "./BaseException";
+export default class PageException extends BaseException {
   message: string;
-  constructor(message: string, res: Response) {
-    super(message);
+  constructor(message: string, status:number, res: Response) {
+    super(message, status);
     this.message = message;
 
-    res.send();
+    res.status(status).send(message)
   }
 }

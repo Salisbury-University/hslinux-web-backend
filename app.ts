@@ -28,6 +28,5 @@ app.use(ExceptionHandler);
 /** Parse through frontmatter to be stored on server start and then every 3 minutes */
 import { parseFrontmatter } from "./mark";
 parseFrontmatter();
-setInterval(parseFrontmatter, 180000);
 
 export { app, config };
