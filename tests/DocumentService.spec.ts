@@ -1,4 +1,5 @@
 import { test } from "@japa/runner";
+import { doesNotMatch } from "assert";
 import request from "supertest"
 import { app } from "../app"
 
@@ -28,7 +29,7 @@ test.group("Docuemnt Service", () => {
   }).waitForDone();
 
 
-  /** Makes sure a astronomical page parameter returns no documents */
+  /** Makes sure an astronomical page parameter returns no documents */
   test("Documents Page 9999999999999999 returns no documents", async ({ expect }, done: Function) => {
     request(app)
       .get('/api/v1/docs/9999999999999999')
@@ -42,12 +43,23 @@ test.group("Docuemnt Service", () => {
 
 
   /** Makes sure first page has some documents */
-  test("Documents Page 1 returns some documents", async ({ expect } , done: Function) => {
+  test("Documents Page 1 returns some documents", async ({ expect }, done: Function) => {
     request(app)
       .get('/api/v1/docs/1')
       .expect(200)
       .then(({ body }) => {
         expect(body.docs.length).toBeGreaterThan(0) 
+
+        done()
+      })
+  }).waitForDone();
+
+  test('Page 0 should throw error', ({ expect }, done: Function) => {
+    request(app)
+      .get('/api/v1/docs/0')
+      .expect(400)
+      .then(() => {
+        
 
         done()
       })

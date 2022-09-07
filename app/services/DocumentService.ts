@@ -1,6 +1,6 @@
 import { getFrontmatter } from "../../mark";
 import DocumentNotFoundException from "../exceptions/DocumentException";
-
+import PageException from "../exceptions/PageException";
 /**
  * Service for Document that has functions to fetch the documents
  * from the database
@@ -43,6 +43,10 @@ export const DocumentService = {
    * @param res
    */
   async multiDocPaged(page, res) {
+
+    //also need to check if the page contains letters, since we dont want letters in the page parameter
+    if (page < 1 ) 
+      throw new PageException("Page cannot be less than 1",400,res)
     const documents = getFrontmatter();
 
     /** Skips this number of documents */

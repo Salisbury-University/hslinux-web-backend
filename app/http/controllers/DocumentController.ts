@@ -27,18 +27,12 @@ export const DocumentController = {
    * @returns
    */
   async multiDocPaged(req: Request, res: Response, next: NextFunction) {
-    
-    let page = parseInt(req.params.page,10)
-    
-    //also need to check if the page contains letters, since we dont want letters in the page parameter
-    if (page < 1 ) {
       try {
-        throw new PageException("Page cannot be zero", 400, res);
-      } catch (e) {}
-    } else {
-      await DocumentService.multiDocPaged(page, res);
-      return next;
-    }
+        await DocumentService.multiDocPaged(req.params.page, res);
+      } catch (e) {
+        
+      }
+    
   },
 
   /**

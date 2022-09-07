@@ -6,14 +6,7 @@ import PageException from "../app/exceptions/PageException";
 
 test.group('Document Controller', () => {
 
-  test('Page 0 should throw error', ({ expect }) => {
-    request(app)
-      .get('/api/v1/docs/0')
-      .expect(400)
-      .then(() => {
-        
-      })
-  })
+  
 
 
 })
