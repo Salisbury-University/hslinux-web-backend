@@ -45,9 +45,10 @@ export const DocumentService = {
   async multiDocPaged(page, res) {
 
     //also need to check if the page contains letters, since we dont want letters in the page parameter
-    if (page < 1 ) 
-      throw new PageException("Page cannot be less than 1",400,res)
-    const documents = getFrontmatter();
+    if (page < 1 ){ 
+      throw new PageException()
+    }
+      const documents = getFrontmatter();
 
     /** Skips this number of documents */
     const skip = (page - 1) * 10;
@@ -85,6 +86,7 @@ export const DocumentService = {
    * If the document is found, sends id, content, and metadata to Body
    * @param req Express Request
    * @param res Express Response
+   * @throws 'DocumentNotFoundException' when the document id given does not exist
    */
   async singleDoc(id, res) {
     const docsObj = getFrontmatter();
@@ -94,27 +96,24 @@ export const DocumentService = {
      * is set up right
      */
     const document = docsObj[id];
-    if (!document) {
+    
       //document not found
-      try {
-        throw new DocumentNotFoundException("Document Not Found", 404, res);
-      } catch (error) {
-        console.log(error);
+      if (!document)
+        throw new DocumentNotFoundException();
+      else {
+        //document found
+        res.send({
+          id: id,
+          content: document.content,
+          metadata: {
+            title: document.title,
+            description: document.description,
+            author: document.author,
+            group: document.group,
+            dateCreated: document.createdDate,
+            dateUpdated: document.updatedDate,
+          },
+        });
       }
-    } else {
-      //document found
-      res.send({
-        id: id,
-        content: document.content,
-        metadata: {
-          title: document.title,
-          description: document.description,
-          author: document.author,
-          group: document.group,
-          dateCreated: document.createdDate,
-          dateUpdated: document.updatedDate,
-        },
-      });
-    }
   },
 };

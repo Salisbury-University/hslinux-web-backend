@@ -30,7 +30,7 @@ export const DocumentController = {
       try {
         await DocumentService.multiDocPaged(req.params.page, res);
       } catch (e) {
-        
+        next(e);
       }
     
   },
@@ -44,8 +44,10 @@ export const DocumentController = {
    * only pass needed req body
    */
   async singleDoc(req: Request, res: Response, next: NextFunction) {
-    var id = req.params.id; //Check if document exists here before sent to service
-    await DocumentService.singleDoc(id, res);
-    return next;
+    try{
+      await DocumentService.singleDoc(req.params.id, res);
+    }catch(error){
+      next(error);
+    }
   },
 };
