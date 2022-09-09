@@ -7,6 +7,9 @@ const app = express();
 import bodyParser from "body-parser";
 app.use(bodyParser.json());
 
+const cors = require('cors');
+app.use(cors());
+
 /** Import routers from ``app/routes/index`` **/
 import indexRouter from "./app/routes/index";
 
