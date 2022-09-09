@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import PageException from "../../exceptions/PageException";
 import { DocumentService } from "../../services/DocumentService";
 
 /**

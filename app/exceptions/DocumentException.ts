@@ -1,5 +1,4 @@
 import BaseException from "./BaseException";
-import { Response } from "express";
 export default class DocumentNotFoundException extends BaseException {
   status: number;
   

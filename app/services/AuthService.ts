@@ -1,5 +1,4 @@
-import { PrismaClient, Prisma } from "@prisma/client";
-import UnauthorizedException from "../exceptions/UnauthorizedException";
+import { PrismaClient } from "@prisma/client";
 import auth from "../../config/auth";
 import jwt_decode from "jwt-decode";
 
