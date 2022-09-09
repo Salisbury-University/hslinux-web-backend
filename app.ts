@@ -20,8 +20,4 @@ app.use("/", indexRouter);
 import ExceptionHandler from "./app/exceptions/ExceptionHandler";
 app.use(ExceptionHandler);
 
-/** Parse through frontmatter to be stored on server start and then every 3 minutes */
-//import { parseFrontmatter } from "./mark";
-//parseFrontmatter();
-
 export { app, config };

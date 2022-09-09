@@ -23,13 +23,12 @@ export const DocumentController = {
    * @param req Express Request object
    * @param res Express Response object
    * @param next Next Controller
-   * @returns
    */
   async multiDocPaged(req: Request, res: Response, next: NextFunction) {
       try {
         await DocumentService.multiDocPaged(req.params.page, res);
-      } catch (e) {
-        next(e);
+      } catch (error) {
+        next(error);
       }
     
   },
@@ -39,8 +38,6 @@ export const DocumentController = {
    * @param req Express Request object
    * @param res Express Response object
    * @param next Next Controller
-   * @returns
-   * only pass needed req body
    */
   async singleDoc(req: Request, res: Response, next: NextFunction) {
     try{

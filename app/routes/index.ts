@@ -28,7 +28,12 @@ import documentRouter from "./documents"
 router.use(documentRouter);
 
 import { parseFrontmatter } from "../../mark";
+
+/** Parse through frontmatter to be stored on server start and then every 1 minute */
 parseFrontmatter();
+
+/** This causes Unit Tests to hang */
+//setInterval(parseFrontmatter, 60000);
 
 // Export the router
 export default router;

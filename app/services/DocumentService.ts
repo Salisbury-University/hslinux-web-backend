@@ -1,6 +1,6 @@
 import { getFrontmatter } from "../../mark";
 import DocumentNotFoundException from "../exceptions/DocumentException";
-import PageException from "../exceptions/PageException";
+import PageNotFoundException from "../exceptions/PageException";
 /**
  * Service for Document that has functions to fetch the documents
  * from the database
@@ -39,14 +39,15 @@ export const DocumentService = {
    * Page 1 takes documents 1-10,
    * Page 2 takes documents 11-20,
    * etc.
-   * @param req
-   * @param res
+   * @param req Express Request
+   * @param res Express Response
+   * @throws 'PageException' when the page is less than 1
    */
   async multiDocPaged(page, res) {
 
     //also need to check if the page contains letters, since we dont want letters in the page parameter
     if (page < 1 ){ 
-      throw new PageException()
+      throw new PageNotFoundException()
     }
       const documents = getFrontmatter();
 
