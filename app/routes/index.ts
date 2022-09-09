@@ -27,5 +27,8 @@ router.use("/auth", authRouter);
 import documentRouter from "./documents"
 router.use(documentRouter);
 
+import { parseFrontmatter } from "../../mark";
+parseFrontmatter();
+
 // Export the router
 export default router;
