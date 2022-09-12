@@ -25,14 +25,9 @@ router.use("/auth", authRouter);
 
 import DocumentRouter from "./documents"
 //Router to fetch full list of document ids that the user has access to
-router.use("/api/v1/docs", DocumentRouter);
-router.use("/api/v1/doc", DocumentRouter)
+router.use("/api/v1", DocumentRouter);
 
-import documentRouter from "./documents"
-router.use(documentRouter);
-
-import { parseFrontmatter } from "../services/mark";
-
+import { parseFrontmatter } from "../services/DocumentService";
 /** Parse through frontmatter to be stored on server start and then every 1 minute */
 parseFrontmatter();
 
