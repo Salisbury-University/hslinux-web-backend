@@ -6,7 +6,6 @@ import express from "express";
 // Import route controller(s)
 import { IndexController } from "../http/controllers/IndexController";
 
-import DocumentRouter from "./documents"
 // import validation middleware
 import validate from "../http/middleware/ValidationMiddleware";
 import schema from "../schema/example";
@@ -24,15 +23,15 @@ router.post("/", validate(schema), IndexController.index);
 import authRouter from "./auth";
 router.use("/auth", authRouter);
 
-import { DocumentController } from '../http/controllers/DocumentController'
+import DocumentRouter from "./documents"
 //Router to fetch full list of document ids that the user has access to
-router.get("/api/v1/docs/", DocumentRouter);
-
+router.use("/api/v1/docs", DocumentRouter);
+router.use("/api/v1/doc", DocumentRouter)
 
 import documentRouter from "./documents"
 router.use(documentRouter);
 
-import { parseFrontmatter } from "../../mark";
+import { parseFrontmatter } from "../services/mark";
 
 /** Parse through frontmatter to be stored on server start and then every 1 minute */
 parseFrontmatter();
