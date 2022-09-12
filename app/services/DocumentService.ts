@@ -1,6 +1,6 @@
 //import { getFrontmatter } from "./mark";
-import DocumentNotFoundException from "../exceptions/DocumentException";
-import PageException from "../exceptions/PageException";
+import NotFoundException from "../exceptions/NotFoundException";
+import BadRequestException from "../exceptions/BadRequestException";
 import zod, { number } from 'zod'
 import { marked } from "marked";
 import fs from "fs";
@@ -50,7 +50,7 @@ export const DocumentService = {
 
     //also need to check if the page contains letters, since we dont want letters in the page parameter
     if (page < 1 ){ 
-      throw new PageException()
+      throw new BadRequestException()
     }
       const documents = getFrontmatter();
 
@@ -103,7 +103,7 @@ export const DocumentService = {
     
       //document not found
       if (!document)
-        throw new DocumentNotFoundException();
+        throw new NotFoundException();
       else {
         //document found
         return {

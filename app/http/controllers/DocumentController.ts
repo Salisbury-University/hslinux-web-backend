@@ -29,8 +29,8 @@ export const DocumentController = {
       try {
         const documentsPaged = await DocumentService.multiDocPaged(req.params.page);
         res.send(documentsPaged);
-      } catch (error) {
-        next(error);
+      } catch (err) {
+        return next(err);
       }
     
   },
@@ -45,8 +45,8 @@ export const DocumentController = {
     try{
       const singleDocument = await DocumentService.singleDoc(req.params.id);
       res.send(singleDocument);
-    }catch(error){
-      next(error);
+    }catch(err){
+      return next(err);
     }
   },
 };
