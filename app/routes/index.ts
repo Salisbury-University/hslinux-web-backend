@@ -6,6 +6,7 @@ import express from "express";
 // Import route controller(s)
 import { IndexController } from "../http/controllers/IndexController";
 
+import DocumentRouter from "./documents"
 // import validation middleware
 import validate from "../http/middleware/ValidationMiddleware";
 import schema from "../schema/example";
@@ -25,13 +26,7 @@ router.use("/auth", authRouter);
 
 import { DocumentController } from '../http/controllers/DocumentController'
 //Router to fetch full list of document ids that the user has access to
-router.get("/api/v1/docs", DocumentController.multiDoc);
-
-//Router to fetch a list of document ids that the user has access to, but in a specific range
-router.get("/api/v1/docs/:page", DocumentController.multiDocPaged);
-
-//Router for fetching a single document
-router.get("/api/v1/doc/:id", DocumentController.singleDoc);
+router.get("/api/v1/docs/", DocumentRouter);
 
 
 import documentRouter from "./documents"
