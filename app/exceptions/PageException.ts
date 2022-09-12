@@ -1,7 +1,7 @@
 import BaseException from "./BaseException";
-export default class PageException extends BaseException {
+export default class PageNotFoundException extends BaseException {
   message: string;
-  constructor(message: string = "Page cannot be less than 1") {
+  constructor(message: string = "Bad Request") {
     super(message, 400);
   }
 }
