@@ -14,7 +14,8 @@ export const DocumentController = {
    * @returns
    */
   async multiDoc(req: Request, res: Response, next: NextFunction) {
-    await DocumentService.multiDoc(res);
+    const documents = await DocumentService.multiDoc();
+    res.send(documents);
     return next;
   },
 
@@ -26,7 +27,8 @@ export const DocumentController = {
    */
   async multiDocPaged(req: Request, res: Response, next: NextFunction) {
       try {
-        await DocumentService.multiDocPaged(req.params.page, res);
+        const documentsPaged = await DocumentService.multiDocPaged(req.params.page);
+        res.send(documentsPaged);
       } catch (error) {
         next(error);
       }
@@ -41,7 +43,8 @@ export const DocumentController = {
    */
   async singleDoc(req: Request, res: Response, next: NextFunction) {
     try{
-      await DocumentService.singleDoc(req.params.id, res);
+      const singleDocument = await DocumentService.singleDoc(req.params.id);
+      res.send(singleDocument);
     }catch(error){
       next(error);
     }

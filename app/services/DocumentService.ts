@@ -15,7 +15,7 @@ export const DocumentService = {
    * @param req Express Request
    * @param res Express Response
    */
-  async multiDoc(res) {
+  async multiDoc() {
     const documents = getFrontmatter();
 
     /** Body to add the document IDs to */
@@ -34,7 +34,7 @@ export const DocumentService = {
     }
 
     //Send the list of Document IDs to Body
-    res.send(documentList);
+    return documentList;
   },
 
   /**
@@ -46,7 +46,7 @@ export const DocumentService = {
    * @param res Express Response
    * @throws 'PageException' when the page is less than 1
    */
-  async multiDocPaged(page, res) {
+  async multiDocPaged(page) {
 
     //also need to check if the page contains letters, since we dont want letters in the page parameter
     if (page < 1 ){ 
@@ -80,7 +80,7 @@ export const DocumentService = {
     }
 
     /** Sends list of Document IDs to JSON Body */
-    res.send(documentList);
+    return documentList;
   },
 
   /**
@@ -92,7 +92,7 @@ export const DocumentService = {
    * @param res Express Response
    * @throws 'DocumentNotFoundException' when the document id given does not exist
    */
-  async singleDoc(id, res) {
+  async singleDoc(id) {
     const docsObj = getFrontmatter();
 
     /** Finds document in database using ID
@@ -106,7 +106,7 @@ export const DocumentService = {
         throw new DocumentNotFoundException();
       else {
         //document found
-        res.send({
+        return {
           id: id,
           content: document.content,
           metadata: {
@@ -117,7 +117,7 @@ export const DocumentService = {
             dateCreated: document.createdDate,
             dateUpdated: document.updatedDate,
           },
-        });
+        };
       }
   },
 };
