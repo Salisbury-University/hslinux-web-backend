@@ -1,9 +1,12 @@
 //import { getFrontmatter } from "./mark";
 import NotFoundException from "../exceptions/NotFoundException";
 import BadRequestException from "../exceptions/BadRequestException";
-import zod, { number } from 'zod'
 import { marked } from "marked";
 import fs from "fs";
+import { z } from "zod" 
+import PageSchema from "../schema/CheckPageNumber"
+import validate from '../http/middleware/ValidationMiddleware'
+
 /**
  * Service for Document that has functions to fetch the documents
  * from the database
@@ -47,12 +50,13 @@ export const DocumentService = {
    * @throws 'PageException' when the page is less than 1
    */
   async multiDocPaged(page) {
+    const pageAsInt = parseInt(page, 10);
 
-    //also need to check if the page contains letters, since we dont want letters in the page parameter
-    if (page < 1 ){ 
-      throw new BadRequestException()
+    /** If page is a string or if the page numbers is less than 0, throw error */
+    if (!pageAsInt || pageAsInt < 1){ 
+      throw new BadRequestException();
     }
-      const documents = getFrontmatter();
+    const documents = getFrontmatter();
 
     /** Skips this number of documents */
     const skip = (page - 1) * 10;
