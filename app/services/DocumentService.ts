@@ -1,11 +1,7 @@
-//import { getFrontmatter } from "./mark";
 import NotFoundException from "../exceptions/NotFoundException";
 import BadRequestException from "../exceptions/BadRequestException";
 import { marked } from "marked";
 import fs from "fs";
-import { z } from "zod" 
-import PageSchema from "../schema/CheckPageNumber"
-import validate from '../http/middleware/ValidationMiddleware'
 
 /**
  * Service for Document that has functions to fetch the documents
