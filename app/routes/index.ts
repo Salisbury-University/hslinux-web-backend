@@ -23,9 +23,14 @@ router.post("/", validate(schema), IndexController.index);
 import authRouter from "./auth";
 router.use("/auth", authRouter);
 
-import DocumentRouter from "./documents"
-//Router to fetch full list of document ids that the user has access to
-router.use("/api/v1", DocumentRouter);
+import MultiDocumentRouter from "./multiDocuments";
+import SingleDocumentRouter from "./singleDocument";
+
+//Router to fetch a list of document ids that the user has access to, either all or using pagination
+router.use("/api/v1/docs", MultiDocumentRouter);
+
+//Router to fetch one document
+router.use("/api/v1/doc", SingleDocumentRouter);
 
 import { parseFrontmatter } from "../services/DocumentService";
 /** Parse through frontmatter to be stored on server start and then every 1 minute */

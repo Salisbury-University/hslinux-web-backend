@@ -2,6 +2,7 @@ import NotFoundException from "../exceptions/NotFoundException";
 import BadRequestException from "../exceptions/BadRequestException";
 import { marked } from "marked";
 import fs from "fs";
+import BaseException from "../exceptions/BaseException";
 
 /**
  * Service for Document that has functions to fetch the documents
@@ -43,13 +44,13 @@ export const DocumentService = {
    * etc.
    * @param req Express Request
    * @param res Express Response
-   * @throws 'PageException' when the page is less than 1
+   * @throws 'BadRequestException' when the page is less than 1 or contains letters
    */
   async multiDocPaged(page) {
     const pageAsInt = parseInt(page, 10);
 
     /** If page is a string or if the page numbers is less than 0, throw error */
-    if (!pageAsInt || pageAsInt < 1){ 
+    if (!pageAsInt || pageAsInt < 1) {
       throw new BadRequestException();
     }
     const documents = getFrontmatter();
@@ -90,7 +91,7 @@ export const DocumentService = {
    * If the document is found, sends id, content, and metadata to Body
    * @param req Express Request
    * @param res Express Response
-   * @throws 'DocumentNotFoundException' when the document id given does not exist
+   * @throws 'NotFoundException' when the document id given does not exist
    */
   async singleDoc(id) {
     const docsObj = getFrontmatter();
@@ -100,25 +101,24 @@ export const DocumentService = {
      * is set up right
      */
     const document = docsObj[id];
-    
-      //document not found
-      if (!document)
-        throw new NotFoundException();
-      else {
-        //document found
-        return {
-          id: id,
-          content: document.content,
-          metadata: {
-            title: document.title,
-            description: document.description,
-            author: document.author,
-            group: document.group,
-            dateCreated: document.createdDate,
-            dateUpdated: document.updatedDate,
-          },
-        };
-      }
+
+    //document not found
+    if (!document) throw new NotFoundException();
+    else {
+      //document found
+      return {
+        id: id,
+        content: document.content,
+        metadata: {
+          title: document.title,
+          description: document.description,
+          author: document.author,
+          group: document.group,
+          dateCreated: document.createdDate,
+          dateUpdated: document.updatedDate,
+        },
+      };
+    }
   },
 };
 
@@ -130,6 +130,7 @@ const docs = new Object();
 /**
  * Parses Frontmatter and stores in dictionary
  * @returns dictionary object
+ * @throws 'Document Read Error' when there is an error reading the documents
  */
 export function parseFrontmatter() {
   /** All filenames in directory /docs */
@@ -140,10 +141,7 @@ export function parseFrontmatter() {
     if (file.endsWith(".md")) {
       //reads content of file and grabs the data from frontmatter
       fs.readFile("docs/" + file, "utf8", (err, data) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
+        if (err) throw "Document Read Error";
 
         /** Tokenized markdown code */
         const token = marked.lexer(data);
@@ -196,6 +194,6 @@ export function parseFrontmatter() {
 }
 
 /** returns docs object to be used in DocService */
- function getFrontmatter() {
+function getFrontmatter() {
   return docs;
 }
