@@ -2,7 +2,6 @@ import NotFoundException from "../exceptions/NotFoundException";
 import BadRequestException from "../exceptions/BadRequestException";
 import { marked } from "marked";
 import fs from "fs";
-import BaseException from "../exceptions/BaseException";
 
 /**
  * Service for Document that has functions to fetch the documents
@@ -10,8 +9,7 @@ import BaseException from "../exceptions/BaseException";
  */
 export const DocumentService = {
   /**
-   * Grabs all of the documents and sends the document
-   * IDs to the JSON Body
+   * Grabs all of the documents and returns the document IDs in a list
    * @param req Express Request
    * @param res Express Response
    */
@@ -38,13 +36,14 @@ export const DocumentService = {
   },
 
   /**
-   * Takes the page number from the request and puts the 10 documents into JSON Body
+   * Takes the page number from the request and returns 10 document IDs.
    * Page 1 takes documents 1-10,
    * Page 2 takes documents 11-20,
    * etc.
    * @param req Express Request
    * @param res Express Response
    * @throws 'BadRequestException' when the page is less than 1 or contains letters
+   * @returns List of Document IDs
    */
   async multiDocPaged(page) {
     const pageAsInt = parseInt(page, 10);
@@ -70,8 +69,7 @@ export const DocumentService = {
      * Later on, we'll need to check if we have access to this document
      * with group attribute
      */
-    var index = 0,
-      docCount = 0;
+    let index = 0, docCount = 0;
     for (const id of Object.keys(documents)) {
       if (index >= skip && docCount <= 10) {
         documentList.docs.push(id);
@@ -88,10 +86,11 @@ export const DocumentService = {
    * Takes the id from the request and looks for it in the
    * dictionary object
    * If the document is not there, sends a '404 Not Found' status.
-   * If the document is found, sends id, content, and metadata to Body
+   * If the document is found, returns id, content, and metadata
    * @param req Express Request
    * @param res Express Response
    * @throws 'NotFoundException' when the document id given does not exist
+   * @returns ID, Content, and metadata of markdown file of given ID
    */
   async singleDoc(id) {
     const docsObj = getFrontmatter();
@@ -103,7 +102,8 @@ export const DocumentService = {
     const document = docsObj[id];
 
     //document not found
-    if (!document) throw new NotFoundException();
+    if (!document) 
+      throw new NotFoundException();
     else {
       //document found
       return {
