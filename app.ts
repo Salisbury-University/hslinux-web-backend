@@ -2,15 +2,14 @@
 import { config } from "./config";
 import express from "express";
 
-const cors = require('cors')
-
 const app = express();
 
 /** Setup request body parsing */
 import bodyParser from "body-parser";
 app.use(bodyParser.json());
 
-app.use(cors())
+const cors = require('cors');
+app.use(cors());
 
 /** Import routers from ``app/routes/index`` **/
 import indexRouter from "./app/routes/index";

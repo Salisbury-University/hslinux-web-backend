@@ -113,5 +113,4 @@ export const AuthService = {
   async logout(req, res) {
     //TODO Make API call to invalidate the token from logout function
   },
-
 };
