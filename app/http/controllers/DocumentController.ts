@@ -6,8 +6,9 @@ import { DocumentService } from "../../services/DocumentService";
  */
 export const DocumentController = {
   /**
-   * Sends Request and Response to multiDoc() Service
-   *
+   * Sends Request and Response to multiDoc() Service.
+   * Sends all documents grabbed from DocumentService to body
+   * Uses route '/api/v1/docs/'
    * @param req Express Request object
    * @param res Express Response object
    * @param next Next Controller
@@ -20,7 +21,10 @@ export const DocumentController = {
   },
 
   /**
-   * Sends Request and Response to multiDocPaged() Service
+   * Sends Request and Response to multiDocPaged() Service.
+   * Sends documents grabbed from DocumentService to body
+   * Uses route '/api/v1/docs/:page'.
+   * ":page" is the page number
    * @param req Express Request object
    * @param res Express Response object
    * @param next Next Controller
@@ -36,7 +40,9 @@ export const DocumentController = {
   },
 
   /**
-   * Sends Request and Response to singleDoc service
+   * Sends Request and Response to singleDoc service.
+   * Uses route '/api/v1/doc/:id'.
+   * ":id" is the id of the markdown file
    * @param req Express Request object
    * @param res Express Response object
    * @param next Next Controller
