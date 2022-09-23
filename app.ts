@@ -1,6 +1,7 @@
 // Import config to setup the global configuration object.
 import { config } from "./config";
 import express from "express";
+
 const app = express();
 
 /** Setup request body parsing */

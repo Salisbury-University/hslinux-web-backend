@@ -44,5 +44,4 @@ export const AuthController = {
 
     return next();
   },
-
 };

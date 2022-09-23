@@ -1,16 +1,18 @@
 import express from "express";
-import { IndexController } from "../http/controllers/IndexController";
 import { AuthController } from "../http/controllers/AuthController";
 
-const router = express.Router();
+//Import validation middleware and login schema
+import validate from "../http/middleware/ValidationMiddleware";
+import AuthLoginSchema from "../schema/AuthLoginPost";
+
+const AuthRouter = express.Router();
 
 import AuthMiddleware from "../http/middleware/AuthMiddleware";
 // Everywhere below here will require authentication.
-//router.use(AuthMiddleware);
 
-//router.get("/", IndexController.index);
+AuthRouter.post("/login", validate(AuthLoginSchema), AuthController.login);
 
-router.post('/api/v1/auth/login', AuthController.login);
+AuthRouter.use(AuthMiddleware);
 
-router.post('/api/v1/auth/logout', AuthController.logout)
-export default router;
+AuthRouter.post("/logout", AuthController.logout);
+export default AuthRouter;
