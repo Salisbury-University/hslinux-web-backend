@@ -1,24 +1,15 @@
-import { test } from '@japa/runner';
+import { test } from "@japa/runner";
 import { AuthService } from "../app/services/AuthService";
-
-import UnauthorizedException from '../app/exceptions/UnauthorizedException'
-import { group } from 'console';
+import UnauthorizedException from "../app/exceptions/UnauthorizedException";
 
 test.group("AuthService", (group) => {
-
   //Group setup
-  group.setup(async () => {
-  
-
-  })
+  group.setup(async () => {});
   //Group teardown
-  group.teardown(async () => {
-
-  })
-
+  group.teardown(async () => {});
 
   //Login with good user credentials
-  test("Login Good Credentials", async ({ expect }, done: Function) => {
+  test("AuthService Good Login", async ({ expect }, done: Function) => {
     //username and password consistent with project spec
     const username = "cxarausa";
     const password = "testing";
@@ -26,23 +17,21 @@ test.group("AuthService", (group) => {
     //Expecting the login function in AuthService to return the token
     const token = await AuthService.login(username, password);
 
-    expect(token).toMatchObject({ token });
+    expect(token).toBeTruthy();
 
     done();
   }).waitForDone();
 
   //Throw UnauthorizedException with bad credentials on login
-  test("Login Bad Credentials", async ({ expect }, done: Function ) => {
+  test("AuthService Bad Login", async ({ expect }, done: Function) => {
     const badUsername = "badUser";
     const badPassword = "1234";
 
     try {
       await AuthService.login(badUsername, badPassword);
-    }
-    catch (err) {
-      expect(err).toBeInstanceOf(UnauthorizedException)
+    } catch (err) {
+      expect(err).toBeInstanceOf(UnauthorizedException);
       done();
     }
   }).waitForDone();
-
 });

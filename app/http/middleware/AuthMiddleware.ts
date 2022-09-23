@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthService } from "../../services/AuthService";
-import UnauthorizedException from "../../exceptions/UnauthorizedException";
+
 
 /**
  * An example of authentication middleware to create authorized views / routes.
@@ -14,18 +14,29 @@ export default async function (
   res: Response,
   next: NextFunction
 ) {
-  //Check if token exists
-  //Check syntax
 
-  // Check request headers for authorization token of some kind
-  // We'll just assume the entire authorization header is the token for the example.
-  const token = req.headers.authorization ? req.headers.authorization : ""; // auth header or empty string.
+  try {
+    
+    //Assign auth header to const and give default value if its not in the request
+    const authHeader = req.headers.authorization ? req.headers.authorization : "";
 
-  // If the auth service doesn't validate the user
-  if (!AuthService.validate(token)) {
-    return next(new UnauthorizedException());
+    //Check if token is bearer
+    AuthService.checkBearer(authHeader);  
+
+    //Call validate function to make sure there is an existing jwt
+    AuthService.validate(authHeader)
+
+    //Attach username to request object by decoding token
+    req.user = AuthService.decodeToken(authHeader.split(" ")[1]);
+
+  } catch(err) {
+
+    return next(err);
+  
   }
 
-  // Go to the next middleware / controller
+  //TODO - 1. GET RID OF JWT TOKEN 2. ADD IN JWT MALFORMED EXCEPTION 
+
+  
   return next();
 }

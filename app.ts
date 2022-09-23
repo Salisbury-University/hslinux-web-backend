@@ -2,19 +2,21 @@
 import { config } from "./config";
 import express from "express";
 
+const cors = require('cors')
+
 const app = express();
 
 /** Setup request body parsing */
 import bodyParser from "body-parser";
 app.use(bodyParser.json());
 
+app.use(cors())
+
 /** Import routers from ``app/routes/index`` **/
 import indexRouter from "./app/routes/index";
-import authRouter from "./app/routes/auth";
 
 /** Configure application to use routers **/
 app.use("/", indexRouter);
-app.use(authRouter);
 
 /** Using a custom error handler */
 import ExceptionHandler from "./app/exceptions/ExceptionHandler";

@@ -6,10 +6,6 @@ import express from "express";
 // Import route controller(s)
 import { IndexController } from "../http/controllers/IndexController";
 
-// import validation middleware
-import validate from "../http/middleware/ValidationMiddleware";
-import schema from "../schema/login";
-
 // Create a router instance for our nested routes.
 const router = express.Router();
 
@@ -17,12 +13,13 @@ const router = express.Router();
 router.get("/", IndexController.index);
 
 // Example route for input validation that expects a JSON with a message string
-router.post("/", validate(schema), IndexController.index);
+router.post("/", IndexController.index);
 
+// Import auth router
+import AuthRouter from "./auth";
 
-// Nested router for authentication examples
-import authRouter from "./auth";
-router.use("/auth", authRouter);
+router.use("/api/v1/auth", AuthRouter);
+
 
 // Export the router
 export default router;
