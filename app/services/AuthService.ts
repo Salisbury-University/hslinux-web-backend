@@ -1,111 +1,117 @@
-import { PrismaClient } from "@prisma/client";
-import auth from "../../config/auth";
-import jwt_decode from "jwt-decode";
+import axios from "axios";
+import UnauthorizedException from "../exceptions/UnauthorizedException";
+import JWTMalformedException from "../exceptions/JWTMalformedException";
+import { config } from "../../config";
+import jwt from "jsonwebtoken";
 
-const prisma = new PrismaClient()
-const jwt = require('jsonwebtoken');
 
+//TODO - Consider throwing errors instead of returning true/false
 
 /**
  * An example of an authorization service to validate authorization tokens, or attempt sign ins.
  */
 export const AuthService = {
+
   /**
-   * Validates an authorization token for authentication.
+   * Validates an authorization token for authentication by decoding jwt
+   * and attempting a login request with decoded body
    *
    * @param token Authorization token attached to the HTTP header.
-   * @return {boolean} True if their token is valid, false if it isn't.
+   * @throws JWTMalformedException if token has length of zero
    */
-  
-  validate(token: String): boolean {
-    if (token.length != 0) {
-      return true;
-    }
-    return false;
+
+  validate(authHeader: String) {
+    //Grab token from header
+    const authToken = authHeader.split(" ")[1];
+
+    //Verify user credentials from decoded jwt by attempting to login
+    const decodeBody = jwt.decode(authToken);
+    //MAKE SURE DECODEBODY IS NOT NULL
+    if(!decodeBody) {
+      throw new JWTMalformedException();
+    }    
   },
 
   /**
-   * Handles sign in attempts from users
-   *  
-   * @param req {Request} Express request object 
-   * @param res {Response} Express response object
-   * @return token that is signed upon successful login and the route
+   * Checks Authorization Header to make sure its a bearer token and the token is there
+   *
+   * @param authHeader  authorization header
+   * @throws Unauthorized Exception if authHader is not bearer
    */
-  async login(req, res) {
-    //Check if all user credentials are there
-    if (!(req.body.email && req.body.password)) {
-      return res.status(400).send("All input is required");
+  checkBearer(authHeader: String) {
+   
+    //Check if auth header is correct length
+    if (authHeader.split(" ").length > 2) {
+      throw new UnauthorizedException();
+    }
+   
+    const authType = authHeader.split(" ")[0];
+
+    if (authType != "Bearer") {
+      throw new UnauthorizedException();
     }
 
-    try{
-      //Check for user in database
-      const user = await prisma.user.findUnique({
-        where:{ email: req.body.email }
+    const authToken = authHeader && authHeader.split(" ")[1];
+
+    if(!authToken) {
+      throw new UnauthorizedException();
+    }
+
+  },
+
+  /**
+   * Decodes JWT to return username so it can be attached to user request object
+   * @param token
+   * @returns decoded username
+   * @throws JWTMalformed exception of decode is invalid
+   */
+
+  decodeToken(authToken: String) {
+    const uid : JSON = jwt.decode(authToken);
+
+    if(!uid) {
+      throw new JWTMalformedException();
+    }
+
+    return uid;
+  },
+
+
+  /**
+   * Handles sign in attempts from users
+   *
+   * @param uid {String} User id string
+   * @param res {String} password string
+   * @return token if successful login is made
+   * @throws UnauthorizedException if LDAP Authentication fails
+   */
+  async login(uid: string, password: string) {
+    //Make post request to api using axios
+    return await axios({
+      method: "post",
+      url: config.auth.AUTH_URL,
+      data: {
+        uid: uid,
+        password: password,
+      },
+    })
+      .then((response) => {
+        return response.data.token;
       })
-
-       //Check user login credentials against database records
-      if(user.email == req.body.email && user.password == req.body.password){
-        //Generate token after user credentials have been autheticated
-        const token = jwt.sign(user, auth.SECRET, { expiresIn: '2h'});
-        //Store token in user body and update in database
-        const updateUser = await prisma.user.update({
-          where:{
-            email: req.body.email
-          },
-          data: {
-            token: token,
-          }
-        })
-
-        //Variable containing JSON body being returned to user
-        var userRes = {
-          token: token,
-          route: req.body.route
-        }
-        const userJson = JSON.stringify(userRes)
-        
-        res.status(201).json(userJson);
-      }
-    } catch(error) {
-      if(error) return error.message;
-    }
-    
+      .catch((err) => {
+        throw new UnauthorizedException();
+      });
   },
 
   /**
    * Handles logout requests from users
-   *  
-   * @param req {Request} Express request object 
+   *
+   * @param req {Request} Express request object
    * @param res {Response} Express response object
    * @return http code 200 for success
    */
-   async logout(req, res) {
-    //pull out jwt from authorization header
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+  async logout(req, res) {
+    //TODO Make API call to invalidate the token from logout function
+  },
 
-    if(token == null) return;
-
-    //Decode the token so user can be identified
-    //and their jwt can be removed from the database
-    var decoded = jwt_decode(token);
-
-    //Check for user in database
-    const user = await prisma.user.findUnique({
-      where:{ email: decoded['email'] }
-    })  
-    console.log(user);
-
-    //Remove jwt from database
-    const updateUser = await prisma.user.update({
-      where:{
-        email: decoded['email'],
-      },
-      data: {
-        token: null,
-      }
-    })
-
-    return res.sendStatus(200);
-  }
 };
