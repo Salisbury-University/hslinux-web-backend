@@ -2,6 +2,7 @@ import NotFoundException from "../exceptions/NotFoundException";
 import BadRequestException from "../exceptions/BadRequestException";
 import { marked } from "marked";
 import fs from "fs";
+import { json } from "stream/consumers";
 
 /**
  * Service for Document that has functions to fetch the documents
@@ -146,15 +147,9 @@ export function parseFrontmatter() {
         /** Tokenized markdown code */
         const token = marked.lexer(data);
 
-        const jsonToken = JSON.stringify(token[1].raw.split("\n"));
-
-        //console.log(jsonToken);
-
-        const frontMatter = JSON.parse(jsonToken);
+        const frontMatter = token[1].text.split("\n");
 
         console.log(frontMatter);
-
-
         
         /** TODO
          * Remove console.log
