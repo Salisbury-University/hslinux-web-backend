@@ -148,13 +148,14 @@ export function parseFrontmatter() {
 
         const jsonToken = JSON.stringify(token[1].raw.split("\n"));
 
-        console.log(jsonToken);
+        //console.log(jsonToken);
 
         const frontMatter = JSON.parse(jsonToken);
 
-        //console.log(frontMatter); 
+        console.log(frontMatter);
 
-        console.log(frontMatter.title);
+
+        
         /** TODO
          * Remove console.log
          * Access data without frontmatter
