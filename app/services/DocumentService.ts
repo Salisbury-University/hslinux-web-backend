@@ -47,7 +47,7 @@ export const DocumentService = {
    */
   async multiDocPaged(page) {
     const pageAsInt = parseInt(page, 10);
-
+    console.log(pageAsInt);
     /** If page is a string or if the page numbers is less than 0, throw error */
     if (!pageAsInt || pageAsInt < 1) {
       throw new BadRequestException();

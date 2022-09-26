@@ -31,6 +31,7 @@ export const DocumentController = {
    */
   async multiDocPaged(req: Request, res: Response, next: NextFunction) {
       try {
+        console.log(req.params.page)
         const documentsPaged = await DocumentService.multiDocPaged(req.params.page);
         res.send(documentsPaged);
       } catch (err) {
