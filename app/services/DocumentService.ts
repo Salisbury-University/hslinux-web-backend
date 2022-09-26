@@ -146,48 +146,30 @@ export function parseFrontmatter() {
         /** Tokenized markdown code */
         const token = marked.lexer(data);
 
-        /** Holds the block of frontmatter */
-        const values = token[1].raw.split("\n");
+        const jsonToken = JSON.stringify(token[1].raw.split("\n"));
 
-        /** id from frontmatter in md file (file name without '.md') */
-        const id = file.substring(0, file.length - 3);
+        console.log(jsonToken);
 
-        /** Title of the markdown file */
-        const title = values[0].substring(8, values[0].length - 1);
+        const frontMatter = JSON.parse(jsonToken);
 
-        /** Description of the markdown file */
-        const description = values[1].substring(14, values[1].length - 1);
+        //console.log(frontMatter); 
 
-        /** Author of the markdown file */
-        const author = values[2].substring(9, values[2].length - 1);
-
-        /** Group of the markdown file */
-        const group = values[3].substring(8, values[3].length - 1);
-
-        /** Date the markdown file was created */
-        const created = values[4].substring(9, values[4].length);
-        const createdDate = new Date(created);
-
-        /** Date the markdown file was last updated */
-        const updated = values[5].substring(9, values[5].length);
-        const updatedDate = new Date(updated);
-
-        /** Goes through the markdown file and stores everything except frontmatter in memory */
-        var dataWithoutFrontmatter = "";
-        const dataToken = marked.lexer(data);
-        for (var i = 3; i < dataToken.length; i++) {
-          dataWithoutFrontmatter = dataWithoutFrontmatter + dataToken[i].raw;
-        }
-
+        console.log(frontMatter.title);
+        /** TODO
+         * Remove console.log
+         * Access data without frontmatter
+         */
+       
+        /*
         docs[id] = {
-          title: title,
-          description: description,
-          author: author,
-          group: group,
-          createdDate: createdDate,
-          updatedDate: updatedDate,
+          title: frontMatter.title,
+          description: frontMatter.description,
+          author: frontMatter.author,
+          group: frontMatter.group,
+          createdDate: frontMatter.created,
+          updatedDate: frontMatter.updated,
           content: dataWithoutFrontmatter,
-        };
+        };*/
       });
     }
   });
