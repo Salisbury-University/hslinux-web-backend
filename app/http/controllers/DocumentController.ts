@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { DocumentService } from "../../services/DocumentService";
+import DocumentPageNumber from "../../schema/DocumentPageNumber";
+import validate from "../middleware/ValidationMiddleware";
+import z from "zod";
 
 /**
  * Controller for Routes for Fetching Documents
@@ -30,18 +33,18 @@ export const DocumentController = {
    * @param next Next Controller
    */
   async multiDocPaged(req: Request, res: Response, next: NextFunction) {
-      try {
-        console.log(req.params.page)
-        const documentsPaged = await DocumentService.multiDocPaged(req.params.page);
-        res.send(documentsPaged);
-      } catch (err) {
-        return next(err);
-      }
-    
+    try {
+      const documentsPaged = await DocumentService.multiDocPaged(
+        req.params.page
+      );
+      res.send(documentsPaged);
+    } catch (err) {
+      return next(err);
+    }
   },
 
   /**
-   * Sends Request and Response to singleDoc service.
+   * Sends ID in Request object parameters to singleDoc service.
    * Uses route '/api/v1/doc/:id'.
    * ":id" is the id of the markdown file
    * @param req Express Request object
@@ -49,10 +52,10 @@ export const DocumentController = {
    * @param next Next Controller
    */
   async singleDoc(req: Request, res: Response, next: NextFunction) {
-    try{
+    try {
       const singleDocument = await DocumentService.singleDoc(req.params.id);
       res.send(singleDocument);
-    }catch(err){
+    } catch (err) {
       return next(err);
     }
   },
