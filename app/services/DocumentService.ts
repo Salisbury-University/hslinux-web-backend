@@ -46,12 +46,6 @@ export const DocumentService = {
    * @returns List of Document IDs
    */
   async multiDocPaged(page) {
-    const pageAsInt = parseInt(page, 10);
-    console.log(pageAsInt);
-    /** If page is a string or if the page numbers is less than 0, throw error */
-    if (!pageAsInt || pageAsInt < 1) {
-      throw new BadRequestException();
-    }
     const documents = getFrontmatter();
 
     /** Skips this number of documents */
@@ -69,7 +63,8 @@ export const DocumentService = {
      * Later on, we'll need to check if we have access to this document
      * with group attribute
      */
-    let index = 0, docCount = 0;
+    let index = 0,
+      docCount = 0;
     for (const id of Object.keys(documents)) {
       if (index >= skip && docCount <= 10) {
         documentList.docs.push(id);
@@ -102,8 +97,7 @@ export const DocumentService = {
     const document = docsObj[id];
 
     //document not found
-    if (!document) 
-      throw new NotFoundException();
+    if (!document) throw new NotFoundException();
     else {
       //document found
       return {
