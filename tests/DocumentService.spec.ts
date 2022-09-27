@@ -1,69 +1,69 @@
 import { test } from "@japa/runner";
 import { doesNotMatch } from "assert";
-import request from "supertest"
-import { app } from "../app"
+import request from "supertest";
+import { app } from "../app";
 
-const supertest = request(app)
+const supertest = request(app);
 test.group("Docuemnt Service", () => {
-
-  /** 
+  /**
    * Need this here because for some reason, the first GET request to '/api/v1/docs' returns empty docs object
    * If I get rid of this, the other requests below return no documents in the response
    */
   test("Test", async () => {
-    const test = await supertest.get('/api/v1/docs')
-  })
-
+    const test = await supertest.get("/api/v1/docs");
+  });
 
   /** Makes sure a docs object is sent to JSON body */
-  test("Document List is sent as response to '/api/v1/docs'", async ({ expect }, done: Function) => {
+  test("Document List is sent as response to '/api/v1/docs'", async ({
+    expect,
+  }, done: Function) => {
     request(app)
-      .get('/api/v1/docs')
+      .get("/api/v1/docs")
       .expect(200)
       .then(({ body }) => {
-        expect(body).toBeInstanceOf(Object)
+        expect(body).toBeInstanceOf(Object);
 
-        done()
-      })
-      
+        done();
+      });
   }).waitForDone();
-
 
   /** Makes sure an astronomical page parameter returns no documents */
-  test("Documents Page 9999999999999999 returns no documents", async ({ expect }, done: Function) => {
+  test("Documents Page 9999999999999999 returns no documents", async ({
+    expect,
+  }, done: Function) => {
     request(app)
-      .get('/api/v1/docs/9999999999999999')
+      .get("/api/v1/docs/9999999999999999")
       .expect(200)
       .then(({ body }) => {
-        expect(body.docs).toHaveLength(0)
+        expect(body.docs).toHaveLength(0);
 
-        done()
-      })
+        done();
+      });
   }).waitForDone();
-
 
   /** Makes sure first page has some documents */
-  test("Documents Page 1 returns some documents", async ({ expect }, done: Function) => {
+  test("Documents Page 1 returns some documents", async ({
+    expect,
+  }, done: Function) => {
     request(app)
-      .get('/api/v1/docs/1')
+      .get("/api/v1/docs/1")
       .expect(200)
       .then(({ body }) => {
-        expect(body.docs.length).toBeGreaterThan(0) 
+        expect(body.docs.length).toBeGreaterThan(0);
 
-        done()
-      })
+        done();
+      });
   }).waitForDone();
 
-  test('Page 0 should throw error', ({ expect }, done: Function) => {
+  test("Page 0 should throw error", ({ expect }, done: Function) => {
     request(app)
-      .get('/api/v1/docs/0')
-      .expect(400)
-      .then(() => {
-        
+      .get("/api/v1/docs/0")
+      .expect(422)
+      .then((message) => {
+        const test = message.text.split(",");
+        console.log(test[1]);
 
-        done()
-      })
+        done();
+      });
   }).waitForDone();
-
-
-})
+});

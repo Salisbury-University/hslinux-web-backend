@@ -1,5 +1,4 @@
 import NotFoundException from "../exceptions/NotFoundException";
-import BadRequestException from "../exceptions/BadRequestException";
 import { marked } from "marked";
 import fs from "fs";
 

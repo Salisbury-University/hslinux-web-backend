@@ -1,8 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { DocumentService } from "../../services/DocumentService";
-import DocumentPageNumber from "../../schema/DocumentPageNumber";
-import validate from "../middleware/ValidationMiddleware";
-import z from "zod";
 
 /**
  * Controller for Routes for Fetching Documents
