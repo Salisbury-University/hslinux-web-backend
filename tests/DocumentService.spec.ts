@@ -55,13 +55,12 @@ test.group("Docuemnt Service", () => {
       });
   }).waitForDone();
 
-  test("Page 0 should throw error", ({ expect }, done: Function) => {
+  test("Page 0 should throw error", async ({ expect }, done: Function) => {
     request(app)
       .get("/api/v1/docs/0")
       .expect(422)
-      .then((message) => {
-        const test = message.text.split(",");
-        console.log(test[1]);
+      .then(({ body, text }) => {
+        expect(body).toEqual(text);
 
         done();
       });

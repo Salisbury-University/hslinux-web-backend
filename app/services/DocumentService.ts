@@ -89,10 +89,7 @@ export const DocumentService = {
   async singleDoc(id) {
     const docsObj = getFrontmatter();
 
-    /** Finds document in database using ID
-     *  Move this to controller once mark.ts
-     * is set up right
-     */
+    /** Finds document in database using ID */
     const document = docsObj[id];
 
     //document not found
