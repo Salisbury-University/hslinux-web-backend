@@ -5,16 +5,9 @@ import { app } from "../app";
 
 const supertest = request(app);
 test.group("Docuemnt Service", () => {
-  /**
-   * Need this here because for some reason, the first GET request to '/api/v1/docs' returns empty docs object
-   * If I get rid of this, the other requests below return no documents in the response
-   */
-  test("Test", async () => {
-    const test = await supertest.get("/api/v1/docs");
-  });
 
   /** Makes sure a docs object is sent to JSON body */
-  test("Document List is sent as response to '/api/v1/docs'", async ({
+  test("All documents return", async ({
     expect,
   }, done: Function) => {
     request(app)
@@ -28,7 +21,7 @@ test.group("Docuemnt Service", () => {
   }).waitForDone();
 
   /** Makes sure an astronomical page parameter returns no documents */
-  test("Documents Page 9999999999999999 returns no documents", async ({
+  test("Bad Page", async ({
     expect,
   }, done: Function) => {
     request(app)
@@ -42,7 +35,7 @@ test.group("Docuemnt Service", () => {
   }).waitForDone();
 
   /** Makes sure first page has some documents */
-  test("Documents Page 1 returns some documents", async ({
+  test("Good Page", async ({
     expect,
   }, done: Function) => {
     request(app)
@@ -55,12 +48,23 @@ test.group("Docuemnt Service", () => {
       });
   }).waitForDone();
 
-  test("Page 0 should throw error", async ({ expect }, done: Function) => {
+  test("0 for Page", async ({ expect }, done: Function) => {
     request(app)
       .get("/api/v1/docs/0")
       .expect(422)
-      .then(({ body, text }) => {
-        expect(body).toEqual(text);
+      .then(({ body }) => {
+        expect(body.message[0].message).toEqual("Page can only be numbers and must be greater than 0")
+
+        done();
+      });
+  }).waitForDone();
+
+  test("String as Page", async ({ expect }, done: Function) => {
+    request(app)
+      .get("/api/v1/docs/hello")
+      .expect(422)
+      .then(({ body }) => {
+        expect(body.message[0].message).toEqual("Page can only be numbers and must be greater than 0")
 
         done();
       });
