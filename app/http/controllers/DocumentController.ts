@@ -31,6 +31,7 @@ export const DocumentController = {
    */
   async multiDocPaged(req: Request, res: Response, next: NextFunction) {
       try {
+        /** SEND AUTH TOKEN IN HEADERS */
         const documentsPaged = await DocumentService.multiDocPaged(req.params.page);
         res.send(documentsPaged);
       } catch (err) {
