@@ -6,15 +6,12 @@ const supertest = request(app);
 test.group("Docuemnt Service", () => {
 
   /** Makes sure a docs object is sent to JSON body */
-  test("All documents return", async ({
-    expect,
-  }, done: Function) => {
+  test("All documents return", async ({expect}, done: Function) => {
     request(app)
       .get("/api/v1/docs")
       .expect(200)
       .then(({ body }) => {
         expect(body).toBeInstanceOf(Object);
-
         done();
       });
   }).waitForDone();
@@ -34,9 +31,7 @@ test.group("Docuemnt Service", () => {
   }).waitForDone();
 
   /** Makes sure first page has some documents */
-  test("Good Page", async ({
-    expect,
-  }, done: Function) => {
+  test("Good Page", async ({expect}, done: Function) => {
     request(app)
       .get("/api/v1/docs/1")
       .expect(200)
