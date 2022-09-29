@@ -2,7 +2,8 @@ import NotFoundException from "../exceptions/NotFoundException";
 import BadRequestException from "../exceptions/BadRequestException";
 import { marked } from "marked";
 import fs from "fs";
-
+import jwt from "jsonwebtoken";
+import UnauthorizedException from "../exceptions/UnauthorizedException";
 /**
  * Service for Document that has functions to fetch the documents
  * from the database
@@ -13,7 +14,16 @@ export const DocumentService = {
    * @param req Express Request
    * @param res Express Response
    */
-  async multiDoc() {
+  async multiDoc(auth) {
+    //Grab token
+    const authHeader = auth ? auth : "";
+    const authToken = authHeader.split(" ")[1];
+    const decodeBody = jwt.decode(authToken);
+
+    if (!decodeBody) throw new UnauthorizedException();
+
+    /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
+
     const documents = getFrontmatter();
 
     /** Body to add the document IDs to */
@@ -45,7 +55,16 @@ export const DocumentService = {
    * @throws 'BadRequestException' when the page is less than 1 or contains letters
    * @returns List of Document IDs
    */
-  async multiDocPaged(page) {
+  async multiDocPaged(auth, page) {
+    //Grab token
+    const authHeader = auth ? auth : "";
+    const authToken = authHeader.split(" ")[1];
+    const decodeBody = jwt.decode(authToken);
+
+    if (!decodeBody) throw new UnauthorizedException();
+
+    /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
+
     const pageAsInt = parseInt(page, 10);
 
     /** If page is a string or if the page numbers is less than 0, throw error */
@@ -69,7 +88,8 @@ export const DocumentService = {
      * Later on, we'll need to check if we have access to this document
      * with group attribute
      */
-    let index = 0, docCount = 0;
+    let index = 0,
+      docCount = 0;
     for (const id of Object.keys(documents)) {
       if (index >= skip && docCount <= 10) {
         documentList.docs.push(id);
@@ -87,23 +107,31 @@ export const DocumentService = {
    * dictionary object
    * If the document is not there, sends a '404 Not Found' status.
    * If the document is found, returns id, content, and metadata
-   * @param req Express Request
-   * @param res Express Response
+   * @param auth Authorization token
+   * @param id Document ID
    * @throws 'NotFoundException' when the document id given does not exist
    * @returns ID, Content, and metadata of markdown file of given ID
    */
-  async singleDoc(id) {
+  async singleDoc(auth, id) {
+    //Grab token
+    const authHeader = auth ? auth : "";
+    const authToken = authHeader.split(" ")[1];
+    const decodeBody = jwt.decode(authToken);
+
+    if (!decodeBody) throw new UnauthorizedException();
+
+    /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
+
+    /** Documents Dictionary Object */
     const docsObj = getFrontmatter();
 
-    /** Finds document in database using ID
-     *  Move this to controller once mark.ts
-     * is set up right
+    /**
+     * Finds document in database using ID
      */
     const document = docsObj[id];
 
     //document not found
-    if (!document) 
-      throw new NotFoundException();
+    if (!document) throw new NotFoundException();
     else {
       //document found
       return {

@@ -15,7 +15,7 @@ export const DocumentController = {
    * @returns
    */
   async multiDoc(req: Request, res: Response, next: NextFunction) {
-    const documents = await DocumentService.multiDoc();
+    const documents = await DocumentService.multiDoc(req.headers.authorization);
     res.send(documents);
     return next;
   },
@@ -30,14 +30,16 @@ export const DocumentController = {
    * @param next Next Controller
    */
   async multiDocPaged(req: Request, res: Response, next: NextFunction) {
-      try {
-        /** SEND AUTH TOKEN IN HEADERS */
-        const documentsPaged = await DocumentService.multiDocPaged(req.params.page);
-        res.send(documentsPaged);
-      } catch (err) {
-        return next(err);
-      }
-    
+    try {
+      /** SEND AUTH TOKEN IN HEADERS */
+      const documentsPaged = await DocumentService.multiDocPaged(
+        req.headers.authorization,
+        req.params.page
+      );
+      res.send(documentsPaged);
+    } catch (err) {
+      return next(err);
+    }
   },
 
   /**
@@ -49,10 +51,13 @@ export const DocumentController = {
    * @param next Next Controller
    */
   async singleDoc(req: Request, res: Response, next: NextFunction) {
-    try{
-      const singleDocument = await DocumentService.singleDoc(req.params.id);
+    try {
+      const singleDocument = await DocumentService.singleDoc(
+        req.headers.authorization,
+        req.params.id
+      );
       res.send(singleDocument);
-    }catch(err){
+    } catch (err) {
       return next(err);
     }
   },
