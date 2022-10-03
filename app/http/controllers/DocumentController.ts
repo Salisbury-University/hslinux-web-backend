@@ -34,6 +34,7 @@ export const DocumentController = {
     try {
       /** SEND AUTH TOKEN IN HEADERS */
       //Grab token
+    /*
       const authHeader = req.headers.authorization
         ? req.headers.authorization
         : "";
@@ -41,11 +42,8 @@ export const DocumentController = {
       const decodeBody = jwt.decode(authToken);
 
       if (!decodeBody) throw new UnauthorizedException();
-
-      const documentsPaged = await DocumentService.multiDocPaged(
-        req.headers.authorization,
-        req.params.page
-      );
+    */
+      const documentsPaged = await DocumentService.multiDocPaged(req.params.page);
       res.send(documentsPaged);
     } catch (err) {
       return next(err);

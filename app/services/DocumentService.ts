@@ -56,13 +56,7 @@ export const DocumentService = {
    * @throws 'BadRequestException' when the page is less than 1 or contains letters
    * @returns List of Document IDs
    */
-  async multiDocPaged(auth, page) {
-    //Grab token
-    const authHeader = auth ? auth : "";
-    const authToken = authHeader.split(" ")[1];
-    const decodeBody = jwt.decode(authToken);
-
-    if (!decodeBody) throw new UnauthorizedException();
+  async multiDocPaged(page) {
 
     /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
 
@@ -89,16 +83,8 @@ export const DocumentService = {
      * Later on, we'll need to check if we have access to this document
      * with group attribute
      */
-    let index = 0,
-      docCount = 0;
-      //const id of Object.keys(documents)
-    for (let i=skip;i<Object.keys(documents).length;i++) {
-      documentList.docs.push(Object.keys(documents));
-        
-        docCount++;
-      
-      index++;
-    }
+    for (let i=skip;i<Object.keys(documents).length;i++) 
+      documentList.docs.push(Object.keys(documents)[i]);
 
     /** Sends list of Document IDs to JSON Body */
     return documentList;
