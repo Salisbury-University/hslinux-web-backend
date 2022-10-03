@@ -113,14 +113,7 @@ export const DocumentService = {
    * @throws 'NotFoundException' when the document id given does not exist
    * @returns ID, Content, and metadata of markdown file of given ID
    */
-  async singleDoc(auth, id) {
-    //Grab token
-    const authHeader = auth ? auth : "";
-    const authToken = authHeader.split(" ")[1];
-    const decodeBody = jwt.decode(authToken);
-
-    //if (!decodeBody) throw new UnauthorizedException();
-
+  async singleDoc(id) {
     /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
 
     /** Documents Dictionary Object */

@@ -53,6 +53,7 @@ export const DocumentController = {
   },
 
   /**
+   * Checks if user has access to the document with auth token
    * Sends Request and Response to singleDoc service.
    * Uses route '/api/v1/doc/:id'.
    * ":id" is the id of the markdown file
@@ -71,10 +72,7 @@ export const DocumentController = {
       if (!decodeBody) {
         res.redirect(401, "/api/v1/auth/login");
       } else {
-        const singleDocument = await DocumentService.singleDoc(
-          req.headers.authorization,
-          req.params.id
-        );
+        const singleDocument = await DocumentService.singleDoc(req.params.id);
         res.send(singleDocument);
       }
     } catch (err) {
