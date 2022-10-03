@@ -11,8 +11,7 @@ import UnauthorizedException from "../exceptions/UnauthorizedException";
 export const DocumentService = {
   /**
    * Grabs all of the documents and returns the document IDs in a list
-   * @param req Express Request
-   * @param res Express Response
+   * @param auth Authorization header
    */
   async multiDoc(auth) {
     //Grab token
@@ -20,7 +19,9 @@ export const DocumentService = {
     const authToken = authHeader.split(" ")[1];
     const decodeBody = jwt.decode(authToken);
 
-    if (!decodeBody) throw new UnauthorizedException();
+    if (!decodeBody) {
+      //throw new UnauthorizedException();
+    }
 
     /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
 
@@ -118,7 +119,7 @@ export const DocumentService = {
     const authToken = authHeader.split(" ")[1];
     const decodeBody = jwt.decode(authToken);
 
-    if (!decodeBody) throw new UnauthorizedException();
+    //if (!decodeBody) throw new UnauthorizedException();
 
     /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
 

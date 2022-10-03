@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { DocumentService } from "../../services/DocumentService";
-
+import jwt from "jsonwebtoken";
+import UnauthorizedException from "../../exceptions/UnauthorizedException";
 /**
  * Controller for Routes for Fetching Documents
  */
@@ -32,6 +33,15 @@ export const DocumentController = {
   async multiDocPaged(req: Request, res: Response, next: NextFunction) {
     try {
       /** SEND AUTH TOKEN IN HEADERS */
+      //Grab token
+      const authHeader = req.headers.authorization
+        ? req.headers.authorization
+        : "";
+      const authToken = authHeader.split(" ")[1];
+      const decodeBody = jwt.decode(authToken);
+
+      if (!decodeBody) throw new UnauthorizedException();
+
       const documentsPaged = await DocumentService.multiDocPaged(
         req.headers.authorization,
         req.params.page
@@ -52,11 +62,21 @@ export const DocumentController = {
    */
   async singleDoc(req: Request, res: Response, next: NextFunction) {
     try {
-      const singleDocument = await DocumentService.singleDoc(
-        req.headers.authorization,
-        req.params.id
-      );
-      res.send(singleDocument);
+      //Grab token
+      const authHeader = req.headers.authorization
+        ? req.headers.authorization
+        : "";
+      const authToken = authHeader.split(" ")[1];
+      const decodeBody = jwt.decode(authToken);
+      if (!decodeBody) {
+        res.redirect(401, "/api/v1/auth/login");
+      } else {
+        const singleDocument = await DocumentService.singleDoc(
+          req.headers.authorization,
+          req.params.id
+        );
+        res.send(singleDocument);
+      }
     } catch (err) {
       return next(err);
     }
