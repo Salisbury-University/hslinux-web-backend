@@ -91,11 +91,12 @@ export const DocumentService = {
      */
     let index = 0,
       docCount = 0;
-    for (const id of Object.keys(documents)) {
-      if (index >= skip && docCount <= 10) {
-        documentList.docs.push(id);
+      //const id of Object.keys(documents)
+    for (let i=skip;i<Object.keys(documents).length;i++) {
+      documentList.docs.push(Object.keys(documents));
+        
         docCount++;
-      }
+      
       index++;
     }
 
