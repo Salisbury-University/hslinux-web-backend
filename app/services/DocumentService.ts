@@ -149,8 +149,10 @@ export function parseFrontmatter() {
 
         const frontMatter = token[1].text.split("\n");
 
-        console.log(frontMatter);
+        console.log(typeof(frontMatter));
+        console.log(frontMatter[0]);
         
+
         /** TODO
          * Remove console.log
          * Access data without frontmatter
