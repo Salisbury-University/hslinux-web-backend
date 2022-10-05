@@ -68,7 +68,11 @@ export const DocumentController = {
       
       if (!decodeBody) {
         res.redirect(401, "/api/v1/auth/login");
-      } else {
+      }
+      // else if(){
+      //   /** CHECK USER PERMISSIONS HERE, THROW 403 IF  */
+      // }
+      else {
         const singleDocument = await DocumentService.singleDoc(req.params.id);
         res.send(singleDocument);
       }
