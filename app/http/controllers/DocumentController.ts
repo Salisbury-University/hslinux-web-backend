@@ -62,11 +62,10 @@ export const DocumentController = {
   async singleDoc(req: Request, res: Response, next: NextFunction) {
     try {
       //Grab token
-      const authHeader = req.headers.authorization
-        ? req.headers.authorization
-        : "";
+      const authHeader = req.headers.authorization ? req.headers.authorization : "";
       const authToken = authHeader.split(" ")[1];
       const decodeBody = jwt.decode(authToken);
+      
       if (!decodeBody) {
         res.redirect(401, "/api/v1/auth/login");
       } else {
