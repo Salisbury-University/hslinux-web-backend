@@ -153,6 +153,30 @@ export function parseFrontmatter() {
 
         console.log(frontMatter);
 
+        //const frontMatterSplit = frontMatter.text.split(",");
+
+        console.log(frontMatter.length);
+        console.log(frontMatter[0]);
+
+        //Assume title is first value in front matter and pull it
+        const titleKey = frontMatter[0].split(":");
+        const docTitle = titleKey[1];
+
+        for(let i=1; i<frontMatter.length; i++) {
+          const keyValue = frontMatter[i].split(":");
+          const key = keyValue[0];
+          const value = keyValue[1];
+          
+          
+          console.log("Key value pair: " + keyValue);
+          console.log("Key: " + key);
+          console.log("Value: " + value);
+          
+
+          //Append new key value pair to the return object
+          docs[docTitle] = appendFrontMatter(docs[docTitle], key, value);
+                   
+        }
         
 
         /** TODO
@@ -173,6 +197,20 @@ export function parseFrontmatter() {
       });
     }
   });
+}
+
+/**
+ * Function used in parsefrontMatter function
+ * to append new data being parsed to the 
+ * docs[id] object
+ * 
+ * @param doc The document being worked on currently
+ * @param key the key for the appending value
+ * @param value the value associated with the key
+ */
+export function appendFrontMatter(doc, key, value) {
+  doc[key] = value;
+  return doc;
 }
 
 /** returns docs object to be used in DocService */
