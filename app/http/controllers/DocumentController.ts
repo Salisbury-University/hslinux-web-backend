@@ -66,11 +66,12 @@ export const DocumentController = {
       const authToken = authHeader.split(" ")[1];
       const decodeBody = jwt.decode(authToken);
       
-      if (!decodeBody) {
+      //Throws 410 and redirects user to login page
+      if (!decodeBody) { 
         res.redirect(401, "/api/v1/auth/login");
       }
       // else if(){
-      //   /** CHECK USER PERMISSIONS HERE, THROW 403 IF  */
+      //   /** CHECK USER PERMISSIONS HERE, THROW 403 IF LOGGED IN BUT NO PERMS*/
       // }
       else {
         const singleDocument = await DocumentService.singleDoc(req.params.id);
