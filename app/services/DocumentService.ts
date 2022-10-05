@@ -3,6 +3,7 @@ import BadRequestException from "../exceptions/BadRequestException";
 import { marked } from "marked";
 import fs from "fs";
 import { json } from "stream/consumers";
+import UnprocessableEntityException from "../exceptions/UnprocessableEntityException";
 
 /**
  * Service for Document that has functions to fetch the documents
@@ -131,7 +132,7 @@ const docs = new Object();
 /**
  * Parses Frontmatter and stores in dictionary
  * @returns dictionary object
- * @throws 'Document Read Error' when there is an error reading the documents
+ * @throws UnprocessableEntity exception is title is not the first value in the frontmatter
  */
 export function parseFrontmatter() {
   /** All filenames in directory /docs */
@@ -149,51 +150,31 @@ export function parseFrontmatter() {
 
         const frontMatter = token[1].text.split("\n");
 
-        console.log(typeof(frontMatter));
-
-        console.log(frontMatter);
-
-        //const frontMatterSplit = frontMatter.text.split(",");
-
-        console.log(frontMatter.length);
-        console.log(frontMatter[0]);
-
         //Assume title is first value in front matter and pull it
-        const titleKey = frontMatter[0].split(":");
-        const docTitle = titleKey[1];
+        const titleKeyValue = frontMatter[0].split(": ");
+        const docTitleKey = titleKeyValue[0];
+        const docTitleValue = titleKeyValue[1];
+        const id = docTitleValue;
+
+        //Check if assumption that title is first data member is true if not throw Unprocessable Error
+        if(docTitleKey != "title"){
+          throw new UnprocessableEntityException();
+        }
+
+        //Append title to docs object
+        docs[docTitleValue] = appendFrontMatter(docs[docTitleValue] || {}, docTitleKey, docTitleValue);
+
 
         for(let i=1; i<frontMatter.length; i++) {
-          const keyValue = frontMatter[i].split(":");
+          const keyValue = frontMatter[i].split(": ");
           const key = keyValue[0];
           const value = keyValue[1];
           
-          
-          console.log("Key value pair: " + keyValue);
-          console.log("Key: " + key);
-          console.log("Value: " + value);
-          
-
           //Append new key value pair to the return object
-          docs[docTitle] = appendFrontMatter(docs[docTitle], key, value);
-                   
+          docs[id] = appendFrontMatter(docs[id] || {}, key, value);       
         }
-        
 
-        /** TODO
-         * Remove console.log
-         * Access data without frontmatter
-         */
-       
-        /*
-        docs[id] = {
-          title: frontMatter.title,
-          description: frontMatter.description,
-          author: frontMatter.author,
-          group: frontMatter.group,
-          createdDate: frontMatter.created,
-          updatedDate: frontMatter.updated,
-          content: dataWithoutFrontmatter,
-        };*/
+        return docs;
       });
     }
   });
