@@ -116,8 +116,8 @@ export const DocumentService = {
           description: document.description,
           author: document.author,
           group: document.group,
-          dateCreated: document.createdDate,
-          dateUpdated: document.updatedDate,
+          dateCreated: document.created,
+          dateUpdated: document.updated,
         },
       };
     }
@@ -143,7 +143,11 @@ export function parseFrontmatter() {
     if (file.endsWith(".md")) {
       //reads content of file and grabs the data from frontmatter
       fs.readFile("docs/" + file, "utf8", (err, data) => {
-        if (err) throw "Document Read Error";
+        if (err) throw new UnprocessableEntityException();
+
+        //Pull file name and store in id
+        const id = file.substring(0, file.length - 3);
+
 
         /** Tokenized markdown code */
         const token = marked.lexer(data);
@@ -154,7 +158,6 @@ export function parseFrontmatter() {
         const titleKeyValue = frontMatter[0].split(": ");
         const docTitleKey = titleKeyValue[0];
         const docTitleValue = titleKeyValue[1];
-        const id = docTitleValue;
 
         //Check if assumption that title is first data member is true if not throw Unprocessable Error
         if(docTitleKey != "title"){
@@ -162,7 +165,7 @@ export function parseFrontmatter() {
         }
 
         //Append title to docs object
-        docs[docTitleValue] = appendFrontMatter(docs[docTitleValue] || {}, docTitleKey, docTitleValue);
+        docs[id] = appendFrontMatter(docs[id] || {}, docTitleKey, docTitleValue);
 
 
         for(let i=1; i<frontMatter.length; i++) {
@@ -174,7 +177,13 @@ export function parseFrontmatter() {
           docs[id] = appendFrontMatter(docs[id] || {}, key, value);       
         }
 
-        return docs;
+        var dataWithoutFrontmatter = "";
+        const dataToken = marked.lexer(data);
+        for (let i = 3; i < dataToken.length; i++) {
+          dataWithoutFrontmatter = dataWithoutFrontmatter + dataToken[i].raw;
+        }
+
+        docs[id] = appendFrontMatter(docs[id] || {}, "content", dataWithoutFrontmatter);
       });
     }
   });
@@ -190,7 +199,25 @@ export function parseFrontmatter() {
  * @param value the value associated with the key
  */
 export function appendFrontMatter(doc, key, value) {
-  doc[key] = value;
+  //If statement to detect if frontmatter data is a date
+  //If so a new Date object must be initialized
+  if(key == "created") {
+    const createDate = new Date(value);
+    doc[key] = createDate;
+  } else if(key == "updated") {
+    const updateDate = new Date(value);
+    doc[key] = updateDate;
+  } else {
+    //Remove quotation marks from the value to display correctly
+    if(value.substring(0,1) == "\"" && value.substring(value.length-1, value.length) == "\""){
+      const valueNoQuote = value.substring(1, value.length-1);
+      doc[key] = valueNoQuote;
+    }
+    else {
+      doc[key] = value;
+    }
+
+  }
   return doc;
 }
 
