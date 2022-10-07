@@ -39,7 +39,7 @@ test.group("Docuemnt Service", () => {
   }).waitForDone();
 
   /** Makes sure first page has some documents */
-  test("Multi Doc Good Request", async ({expect}, done: Function) => {
+  test("Multi Doc Paged Good Request", async ({expect}, done: Function) => {
     request(app)
       .get("/api/v1/docs/1")
       .expect(200)
@@ -53,6 +53,15 @@ test.group("Docuemnt Service", () => {
   test("Single Doc Bad Request", async ({expect}, done:Function) => {
     request(app)
       .get('/api/v1/doc/ngofndgodgjrnhdlkeogjlgh')
+      .expect(404)
+      .then(({body}) => {
+        expect(body.message).toEqual("Resource Not Found")
+      })
+  })
+
+  test("Single Doc Good Request", async ({expect}, done:Function) => {
+    request(app)
+      .get('/api/v1/doc/test')
       .expect(404)
       .then(({body}) => {
         expect(body.message).toEqual("Resource Not Found")
