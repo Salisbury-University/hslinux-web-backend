@@ -4,7 +4,7 @@ import { app } from "../app";
 
 /** Making sure Controller sends info to body */
 test.group("Document Controller", () => {
-  test("Documents is defined", async ({ expect }, done: Function) => {
+  test("multiDoc is returned content", async ({ expect }, done: Function) => {
     request(app)
       .get("/api/v1/docs/")
       .then(( {body} ) => {
@@ -13,7 +13,7 @@ test.group("Document Controller", () => {
       });
   }).waitForDone();
 
-  test("Paged docs", async ({ expect }, done: Function) => {
+  test("multiDocPaged is returned content", async ({ expect }, done: Function) => {
     request(app)
       .get("/api/v1/docs/1")
       .then(( {body} ) => {
@@ -22,11 +22,12 @@ test.group("Document Controller", () => {
       });
   }).waitForDone();
 
-  test("Paged docs", async ({ expect }, done: Function) => {
+  test("singleDoc is returned content", async ({ expect }, done: Function) => {
     request(app)
       .get("/api/v1/doc/test")
       .then(( {body} ) => {
-        expect(body).toBeTruthy();
+        console.log(body)
+        expect(body).toBeDefined();
         done();
       });
   }).waitForDone();

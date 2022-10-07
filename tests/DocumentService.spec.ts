@@ -6,7 +6,7 @@ const supertest = request(app);
 test.group("Docuemnt Service", () => {
 
   /** Makes sure a docs object is sent to JSON body */
-  test("All documents return", async ({expect}, done: Function) => {
+  test("Multi Doc Good Request", async ({expect}, done: Function) => {
     request(app)
       .get("/api/v1/docs")
       .expect(200)
@@ -16,33 +16,7 @@ test.group("Docuemnt Service", () => {
       });
   }).waitForDone();
 
-  /** Makes sure an astronomical page parameter returns no documents */
-  test("Bad Page", async ({
-    expect,
-  }, done: Function) => {
-    request(app)
-      .get("/api/v1/docs/9999999999999999")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.docs).toHaveLength(0);
-
-        done();
-      });
-  }).waitForDone();
-
-  /** Makes sure first page has some documents */
-  test("Good Page", async ({expect}, done: Function) => {
-    request(app)
-      .get("/api/v1/docs/1")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.docs.length).toBeGreaterThan(0);
-
-        done();
-      });
-  }).waitForDone();
-
-  test("0 for Page", async ({ expect }, done: Function) => {
+  test("Multi Doc Paged Bad Request", async ({ expect }, done: Function) => {
     request(app)
       .get("/api/v1/docs/0")
       .expect(422)
@@ -53,7 +27,7 @@ test.group("Docuemnt Service", () => {
       });
   }).waitForDone();
 
-  test("String as Page", async ({ expect }, done: Function) => {
+  test("Multi Doc Paged Bad Request", async ({ expect }, done: Function) => {
     request(app)
       .get("/api/v1/docs/hello")
       .expect(422)
@@ -63,4 +37,27 @@ test.group("Docuemnt Service", () => {
         done();
       });
   }).waitForDone();
+
+  /** Makes sure first page has some documents */
+  test("Multi Doc Good Request", async ({expect}, done: Function) => {
+    request(app)
+      .get("/api/v1/docs/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.docs.length).toBeGreaterThan(0);
+
+        done();
+      });
+  }).waitForDone();
+
+  test("Single Doc Bad Request", async ({expect}, done:Function) => {
+    request(app)
+      .get('/api/v1/doc/ngofndgodgjrnhdlkeogjlgh')
+      .expect(404)
+      .then(({body}) => {
+        expect(body.message).toEqual("Resource Not Found")
+      })
+  })
+
+
 });
