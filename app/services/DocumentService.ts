@@ -2,7 +2,6 @@ import NotFoundException from "../exceptions/NotFoundException";
 import BadRequestException from "../exceptions/BadRequestException";
 import { marked } from "marked";
 import fs from "fs";
-import { json } from "stream/consumers";
 import UnprocessableEntityException from "../exceptions/UnprocessableEntityException";
 
 /**
@@ -198,7 +197,7 @@ export function parseFrontmatter() {
  * @param key the key for the appending value
  * @param value the value associated with the key
  */
-export function appendFrontMatter(doc, key, value) {
+function appendFrontMatter(doc, key, value) {
   //If statement to detect if frontmatter data is a date
   //If so a new Date object must be initialized
   if(key == "created") {
