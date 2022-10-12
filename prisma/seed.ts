@@ -8,7 +8,8 @@ async function generateUsers() {
     create: {
       email: 'alice@prisma.io',
       username: 'Alice',
-      password: 'somepass'
+      password: 'somepass',
+      group: 'faculty'
     },
   })
 
@@ -18,7 +19,8 @@ async function generateUsers() {
     create: {
       email: 'bob@prisma.io',
       username: 'Bob',
-      password: 'passsome'
+      password: 'passsome',
+      group: 'students'
     },
   })
 }
