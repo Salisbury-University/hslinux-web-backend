@@ -3,7 +3,7 @@ import BadRequestException from "../exceptions/BadRequestException";
 import { marked } from "marked";
 import fs from "fs";
 import jwt from "jsonwebtoken";
-import UnauthorizedException from "../exceptions/UnauthorizedException";
+import ForbiddenException from '../exceptions/ForbiddenException'
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 /**
@@ -106,15 +106,11 @@ export const DocumentService = {
 
     const user = await prisma.user.findUnique({
       where: {
-        username: "Alice", //Testing for now, retrieve user info then check in db
+        username: "Bob", //Testing for now, retrieve user info then check in db
       },
     });
 
-    /**
-     * TO-DO
-     * CHECK THIS USERS GROUP AGAINST DOCS DICTIONARY OBJ TO MAKE SURE THEY MATCH
-     * RETURN 403 IF THEY DONT MATCH
-     */
+    
 
     /** Documents Dictionary Object */
     const docsObj = getFrontmatter();
@@ -122,12 +118,16 @@ export const DocumentService = {
     /**
      * Finds document in database using ID
      */
-    const document = docsObj[id];
+    const document = docsObj[id]
 
-    //document not found
-    if (!document) throw new NotFoundException();
-    else {
-      //document found
+    /**
+     * TO-DO
+     * CHECK THIS USERS GROUP AGAINST DOCS DICTIONARY OBJ TO MAKE SURE THEY MATCH
+     * RETURN 403 IF THEY DONT MATCH
+     */
+    if (!document) 
+      throw new NotFoundException()
+    else if(user.group == document.group){
       return {
         id: id,
         content: document.content,
@@ -137,13 +137,14 @@ export const DocumentService = {
           author: document.author,
           group: document.group,
           dateCreated: document.createdDate,
-          dateUpdated: document.updatedDate,
-        },
-      };
+          dateUpdated: document.updatedDate
+        }
+      }
+    }else{
+      throw new ForbiddenException();
     }
-  },
-};
-
+  }
+}
 /** MARKDOWN FRONTMATTER PARSING */
 
 /** Holds frontmatter and markdown from the .md files */
