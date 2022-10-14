@@ -15,7 +15,6 @@ export const UserService = {
      */
 
     async getInfo(uid) {
-        console.log("In user service " + uid);
         //Throw exception if uid is null
         if(!uid) {
             throw new UnauthorizedException();
@@ -29,12 +28,10 @@ export const UserService = {
                 username: uid
             }
         })
-        console.log("In user service " + uid);
 
-        console.log(user);
-
-        //Mock call to LDAP with prisma
-       
+        //Create an object with the username and group to return to controller
+        const returnObj = {id: user.username, groups: user.group}
+        return returnObj;       
     
     },
 };
