@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client'
 import axios from "axios";
-import { string } from 'zod';
 import NotFoundException from "../exceptions/NotFoundException";
 import UnauthorizedException from "../exceptions/UnauthorizedException";
 const prisma = new PrismaClient();
@@ -16,7 +15,7 @@ export const UserService = {
      */
 
     async getInfo(uid) {
-        
+        console.log("In user service " + uid);
         //Throw exception if uid is null
         if(!uid) {
             throw new UnauthorizedException();

@@ -9,6 +9,7 @@ import { IndexController } from "../http/controllers/IndexController";
 // Create a router instance for our nested routes.
 const router = express.Router();
 
+
 // Assign routes to our router
 router.get("/", IndexController.index);
 

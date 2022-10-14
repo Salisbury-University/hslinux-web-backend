@@ -16,6 +16,7 @@ export const UserController = {
         
         //Grab info user service function and catch possible 401
         try {
+            console.log(req.params)
             await UserService.getInfo(req.params.id);
             res.sendStatus(200);
         } catch (err) {
