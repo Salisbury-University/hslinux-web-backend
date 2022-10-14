@@ -4,6 +4,8 @@ import { marked } from "marked";
 import fs from "fs";
 import jwt from "jsonwebtoken";
 import UnauthorizedException from "../exceptions/UnauthorizedException";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 /**
  * Service for Document that has functions to fetch the documents
  * from the database
@@ -57,7 +59,6 @@ export const DocumentService = {
    * @returns List of Document IDs
    */
   async multiDocPaged(page) {
-
     /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
 
     const pageAsInt = parseInt(page, 10);
@@ -83,7 +84,7 @@ export const DocumentService = {
      * Later on, we'll need to check if we have access to this document
      * with group attribute
      */
-    for (let i=skip;i<Object.keys(documents).length;i++) 
+    for (let i = skip; i < Object.keys(documents).length; i++)
       documentList.docs.push(Object.keys(documents)[i]);
 
     /** Sends list of Document IDs to JSON Body */
@@ -102,6 +103,18 @@ export const DocumentService = {
    */
   async singleDoc(id) {
     /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
+
+    const user = await prisma.user.findUnique({
+      where: {
+        username: "Alice", //Testing for now, retrieve user info then check in db
+      },
+    });
+
+    /**
+     * TO-DO
+     * CHECK THIS USERS GROUP AGAINST DOCS DICTIONARY OBJ TO MAKE SURE THEY MATCH
+     * RETURN 403 IF THEY DONT MATCH
+     */
 
     /** Documents Dictionary Object */
     const docsObj = getFrontmatter();

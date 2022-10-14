@@ -34,7 +34,7 @@ export const DocumentController = {
     try {
       /** SEND AUTH TOKEN IN HEADERS */
       //Grab token
-    /*
+      /*
       const authHeader = req.headers.authorization
         ? req.headers.authorization
         : "";
@@ -43,7 +43,9 @@ export const DocumentController = {
 
       if (!decodeBody) throw new UnauthorizedException();
     */
-      const documentsPaged = await DocumentService.multiDocPaged(req.params.page);
+      const documentsPaged = await DocumentService.multiDocPaged(
+        req.params.page
+      );
       res.send(documentsPaged);
     } catch (err) {
       return next(err);
@@ -62,21 +64,23 @@ export const DocumentController = {
   async singleDoc(req: Request, res: Response, next: NextFunction) {
     try {
       //Grab token
-      const authHeader = req.headers.authorization ? req.headers.authorization : "";
+      const authHeader = req.headers.authorization
+        ? req.headers.authorization
+        : "";
       const authToken = authHeader.split(" ")[1];
       const decodeBody = jwt.decode(authToken);
-      
+
       //Throws 410 and redirects user to login page
-      if (!decodeBody) { 
-        res.redirect(401, "/api/v1/auth/login");
-      }
+      //if (!decodeBody) {
+      //  res.redirect(401, "/api/v1/auth/login");
+      //}
       // else if(){
       //   /** CHECK USER PERMISSIONS HERE, THROW 403 IF LOGGED IN BUT NO PERMS*/
       // }
-      else {
-        const singleDocument = await DocumentService.singleDoc(req.params.id);
-        res.send(singleDocument);
-      }
+      //else {
+      const singleDocument = await DocumentService.singleDoc(req.params.id);
+      res.send(singleDocument);
+      //}
     } catch (err) {
       return next(err);
     }
