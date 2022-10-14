@@ -3,10 +3,9 @@ const prisma = new PrismaClient()
 
 async function generateUsers() {
   const alice = await prisma.user.upsert({
-    where: { email: 'alice@prisma.io' },
+    where: { username: 'Alice' },
     update: {},
     create: {
-      email: 'alice@prisma.io',
       username: 'Alice',
       password: 'somepass',
       group: 'faculty'
@@ -14,10 +13,9 @@ async function generateUsers() {
   })
 
   const bob = await prisma.user.upsert({
-    where: { email: 'bob@prisma.io' },
+    where: { username: 'Bob' },
     update: {},
     create: {
-      email: 'bob@prisma.io',
       username: 'Bob',
       password: 'passsome',
       group: 'students'

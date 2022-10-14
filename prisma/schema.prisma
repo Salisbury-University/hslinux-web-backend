@@ -8,7 +8,6 @@ datasource db {
 }
 
 model User {
-  email   String   @unique
   username    String @unique
   password String
   group String
