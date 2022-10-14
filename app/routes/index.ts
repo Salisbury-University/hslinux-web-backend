@@ -20,6 +20,13 @@ import AuthRouter from "./auth";
 
 router.use("/api/v1/auth", AuthRouter);
 
+
+//Import the user router
+import UserRouter from "./user";
+
+router.use("api/v1/user", UserRouter);
+
+//Import document routers
 import MultiDocumentRouter from "./multiDocuments";
 import SingleDocumentRouter from "./singleDocument";
 
