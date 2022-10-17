@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client'
 import axios from "axios";
-import NotFoundException from "../exceptions/NotFoundException";
 import UnauthorizedException from "../exceptions/UnauthorizedException";
 const prisma = new PrismaClient();
 
@@ -28,6 +27,12 @@ export const UserService = {
                 username: uid
             }
         })
+
+        if(!user) {
+            throw new UnauthorizedException();
+        }
+
+        //Throw exception if user is not found
 
         //Create an object with the username and group to return to controller
         const returnObj = {id: user.username, groups: user.group}
