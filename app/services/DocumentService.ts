@@ -17,20 +17,16 @@ export const DocumentService = {
      * Grabs all of the documents and returns the document IDs in a list
      * @param auth Authorization header
      */
-    async multiDoc(auth, userID) {
-      try {
+    async multiDoc(auth, uid) {
+      
         const user = await prisma.user.findUnique({
           where: {
-            username: userID, //Testing for now, retrieve user info then check in db
+            username: uid, //Testing for now, retrieve user info then check in db
           },
         });
 
         if(!user)
           throw new UnauthorizedException();
-      }
-      catch (err) {
-        return next(err);
-      }
     /** 
      * &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
      * TODO:
@@ -58,9 +54,8 @@ export const DocumentService = {
      * Later on, we'll need to check if we have access to this document
      */
     for (const id of Object.keys(documents)) {
-      if(user.group == documents[0].group)
-        console.log("if statement works")
-      documentList.docs.push(id);
+      if(user.group == documents[id].group)
+        documentList.docs.push(id);
     }
 
     //Send the list of Document IDs to Body
