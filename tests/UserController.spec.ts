@@ -40,12 +40,6 @@ test.group("UserController", (group) => {
             .set("Accept", "application/json")
             .expect(200)
             .then(({ body }) => {
-                // expect(body).toHaveProperty("id");
-
-                // const { id } = body.id;
-
-                // expect(id).toHaveProperty("Bob");
-
                 expect(body).toMatchObject( {
                     id: "Bob",
                     groups: "students"
