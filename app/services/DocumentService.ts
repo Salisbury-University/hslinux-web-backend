@@ -5,27 +5,42 @@ import fs from "fs";
 import jwt from "jsonwebtoken";
 import ForbiddenException from '../exceptions/ForbiddenException'
 import { PrismaClient } from "@prisma/client";
+import UnauthorizedException from "../exceptions/UnauthorizedException";
+import { nextTick } from "process";
 const prisma = new PrismaClient();
 /**
  * Service for Document that has functions to fetch the documents
  * from the database
  */
 export const DocumentService = {
-  /**
-   * Grabs all of the documents and returns the document IDs in a list
-   * @param auth Authorization header
-   */
-  async multiDoc(auth) {
-    //Grab token
-    const authHeader = auth ? auth : "";
-    const authToken = authHeader.split(" ")[1];
-    const decodeBody = jwt.decode(authToken);
+    /**
+     * Grabs all of the documents and returns the document IDs in a list
+     * @param auth Authorization header
+     */
+    async multiDoc(auth, userID) {
+      try {
+        const user = await prisma.user.findUnique({
+          where: {
+            username: userID, //Testing for now, retrieve user info then check in db
+          },
+        });
 
-    if (!decodeBody) {
-      //throw new UnauthorizedException();
-    }
+        if(!user)
+          throw new UnauthorizedException();
+      }
+      catch (err) {
+        return next(err);
+      }
+    /** 
+     * &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+     * TODO:
+     * use user functions to check if valid user
+     * &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    
 
+    */
     /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
+
 
     const documents = getFrontmatter();
 
@@ -34,6 +49,8 @@ export const DocumentService = {
       docs: [],
     };
 
+
+
     /**
      * Loops through retrieved documents and pushes Document IDs
      * into docs property of documentList
@@ -41,6 +58,8 @@ export const DocumentService = {
      * Later on, we'll need to check if we have access to this document
      */
     for (const id of Object.keys(documents)) {
+      if(user.group == documents[0].group)
+        console.log("if statement works")
       documentList.docs.push(id);
     }
 
@@ -87,7 +106,6 @@ export const DocumentService = {
     for (let i = skip; i < Object.keys(documents).length; i++)
       documentList.docs.push(Object.keys(documents)[i]);
 
-    /** Sends list of Document IDs to JSON Body */
     return documentList;
   },
 

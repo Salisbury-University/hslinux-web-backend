@@ -16,7 +16,7 @@ export const DocumentController = {
    * @returns
    */
   async multiDoc(req: Request, res: Response, next: NextFunction) {
-    const documents = await DocumentService.multiDoc(req.headers.authorization);
+    const documents = await DocumentService.multiDoc(req.headers.authorization,req.body.userID);
     res.send(documents);
     return next;
   },
