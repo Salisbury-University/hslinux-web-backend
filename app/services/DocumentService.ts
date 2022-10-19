@@ -17,26 +17,16 @@ export const DocumentService = {
      * Grabs all of the documents and returns the document IDs in a list
      * @param auth Authorization header
      */
-    async multiDoc(auth, uid) {
-      
+    async multiDoc(uid) {
+    
         const user = await prisma.user.findUnique({
           where: {
             username: uid, //Testing for now, retrieve user info then check in db
           },
         });
-
+        
         if(!user)
           throw new UnauthorizedException();
-    /** 
-     * &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-     * TODO:
-     * use user functions to check if valid user
-     * &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-    
-
-    */
-    /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
-
 
     const documents = getFrontmatter();
 
@@ -45,13 +35,9 @@ export const DocumentService = {
       docs: [],
     };
 
-
-
     /**
-     * Loops through retrieved documents and pushes Document IDs
-     * into docs property of documentList
-     *
-     * Later on, we'll need to check if we have access to this document
+     * Loops through retrieved documents, checks if user has right group, 
+     * if it does, push Document ID into docs property of documentList
      */
     for (const id of Object.keys(documents)) {
       if(user.group == documents[id].group)
@@ -72,7 +58,7 @@ export const DocumentService = {
    * @throws 'BadRequestException' when the page is less than 1 or contains letters
    * @returns List of Document IDs
    */
-  async multiDocPaged(page) {
+  async multiDocPaged(page,uid) {
     /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
 
     const pageAsInt = parseInt(page, 10);
@@ -81,6 +67,16 @@ export const DocumentService = {
     if (!pageAsInt || pageAsInt < 1) {
       throw new BadRequestException();
     }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        username: uid, //Testing for now, retrieve user info then check in db
+      },
+    });
+
+    if(!user)
+      throw new UnauthorizedException();
+
     const documents = getFrontmatter();
 
     /** Skips this number of documents */
@@ -99,7 +95,8 @@ export const DocumentService = {
      * with group attribute
      */
     for (let i = skip; i < Object.keys(documents).length; i++)
-      documentList.docs.push(Object.keys(documents)[i]);
+      if(user.group == documents[Object.keys(documents)[i]].group)
+        documentList.docs.push(Object.keys(documents)[i]);
 
     return documentList;
   },
@@ -114,24 +111,25 @@ export const DocumentService = {
    * @throws 'NotFoundException' when the document id given does not exist
    * @returns ID, Content, and metadata of markdown file of given ID
    */
-  async singleDoc(id) {
+  async singleDoc(id,uid) {
     /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
 
     const user = await prisma.user.findUnique({
       where: {
-        username: "Bob", //Testing for now, retrieve user info then check in db
+        username: uid,
       },
     });
 
-    
+    if(!user)
+      throw new UnauthorizedException();
 
     /** Documents Dictionary Object */
-    const docsObj = getFrontmatter();
+    const documents = getFrontmatter();
 
     /**
      * Finds document in database using ID
      */
-    const document = docsObj[id]
+    const document = documents[id]
 
     /**
      * TO-DO

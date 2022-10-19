@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { DocumentService } from "../../services/DocumentService";
 import jwt from "jsonwebtoken";
 import UnauthorizedException from "../../exceptions/UnauthorizedException";
+
 /**
  * Controller for Routes for Fetching Documents
  */
@@ -16,9 +17,16 @@ export const DocumentController = {
    * @returns
    */
   async multiDoc(req: Request, res: Response, next: NextFunction) {
-    const documents = await DocumentService.multiDoc(req.headers.authorization,req.body.userID);
-    res.send(documents);
-    return next;
+
+    try {
+      if(req.body.uid == null) //check if uid is passed in body before sending to service
+        throw new UnauthorizedException()
+      const documents = await DocumentService.multiDoc(req.body.uid);
+      res.send(documents);
+      return next;
+    }catch(err){
+      return next(err)
+    }
   },
 
   /**
@@ -32,20 +40,10 @@ export const DocumentController = {
    */
   async multiDocPaged(req: Request, res: Response, next: NextFunction) {
     try {
-      /** SEND AUTH TOKEN IN HEADERS */
-      //Grab token
-      /*
-      const authHeader = req.headers.authorization
-        ? req.headers.authorization
-        : "";
-      const authToken = authHeader.split(" ")[1];
-      const decodeBody = jwt.decode(authToken);
-
-      if (!decodeBody) throw new UnauthorizedException();
-    */
-      const documentsPaged = await DocumentService.multiDocPaged(
-        req.params.page
-      );
+      if(req.body.uid == null) //check if uid is passed in body before sending to service
+        throw new UnauthorizedException();
+      /** Holds paged documents */
+      const documentsPaged = await DocumentService.multiDocPaged(req.params.page,req.body.uid);
       res.send(documentsPaged);
     } catch (err) {
       return next(err);
@@ -63,24 +61,11 @@ export const DocumentController = {
    */
   async singleDoc(req: Request, res: Response, next: NextFunction) {
     try {
-      //Grab token
-      const authHeader = req.headers.authorization
-        ? req.headers.authorization
-        : "";
-      const authToken = authHeader.split(" ")[1];
-      const decodeBody = jwt.decode(authToken);
-
-      //Throws 410 and redirects user to login page
-      //if (!decodeBody) {
-      //  res.redirect(401, "/api/v1/auth/login");
-      //}
-      // else if(){
-      //   /** CHECK USER PERMISSIONS HERE, THROW 403 IF LOGGED IN BUT NO PERMS*/
-      // }
-      //else {
-      const singleDocument = await DocumentService.singleDoc(req.params.id);
+      if(req.body.uid == null) //check if uid is passed in body before sending to service
+        throw new UnauthorizedException();
+      const singleDocument = await DocumentService.singleDoc(req.params.id,req.body.uid);
       res.send(singleDocument);
-      //}
+      
     } catch (err) {
       return next(err);
     }
