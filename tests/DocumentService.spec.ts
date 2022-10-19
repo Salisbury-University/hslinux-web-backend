@@ -1,69 +1,79 @@
 import { test } from "@japa/runner";
-import { doesNotMatch } from "assert";
-import request from "supertest"
-import { app } from "../app"
+import request from "supertest";
+import { app } from "../app";
+import UnauthorizedException from "../app/exceptions/UnauthorizedException";
+import { DocumentService } from "../app/services/DocumentService";
 
-const supertest = request(app)
+const supertest = request(app);
 test.group("Docuemnt Service", () => {
 
-  /** 
-   * Need this here because for some reason, the first GET request to '/api/v1/docs' returns empty docs object
-   * If I get rid of this, the other requests below return no documents in the response
-   */
-  test("Test", async () => {
-    const test = await supertest.get('/api/v1/docs')
+  /** Makes sure a docs object is sent to JSON body */
+  test("Multi Doc Good Request", async ({expect}, done: Function) => {
+    const documentList = await DocumentService.multiDoc("Alice")
+    expect(documentList).toBeDefined();
+  })
+
+  test("Multi Doc Bad Request", async ({expect}, done: Function) => {
+    try{
+     const documentList = await DocumentService.multiDoc("abcdefgh");
+    }catch(err){
+      expect(err).toBeInstanceOf(UnauthorizedException)
+    }
+    
+    
+  })
+
+  test("Multi Doc Paged Bad Request", async ({ expect }, done: Function) => {
+    request(app)
+      .get("/api/v1/docs/0")
+      .expect(422)
+      .then(({ body }) => {
+        expect(body.message[0].message).toEqual("Page can only be numbers and must be greater than 0")
+
+        done();
+      });
+  }).waitForDone();
+
+  test("Multi Doc Paged Bad Request", async ({ expect }, done: Function) => {
+    request(app)
+      .get("/api/v1/docs/hello")
+      .expect(422)
+      .then(({ body }) => {
+        expect(body.message[0].message).toEqual("Page can only be numbers and must be greater than 0")
+
+        done();
+      });
+  }).waitForDone();
+
+  /** Makes sure first page has some documents */
+  test("Multi Doc Paged Good Request", async ({expect}, done: Function) => {
+    request(app)
+      .get("/api/v1/docs/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.docs.length).toBeGreaterThan(0);
+
+        done();
+      });
+  }).waitForDone();
+
+  test("Single Doc Bad Request", async ({expect}, done:Function) => {
+    request(app)
+      .get('/api/v1/doc/ngofndgodgjrnhdlkeogjlgh')
+      .expect(404)
+      .then(({body}) => {
+        expect(body.message).toEqual("Resource Not Found")
+      })
+  })
+
+  test("Single Doc Good Request", async ({expect}, done:Function) => {
+    request(app)
+      .get('/api/v1/doc/test')
+      .expect(200)
+      .then(({body}) => {
+        expect(body).toBeDefined()
+      })
   })
 
 
-  /** Makes sure a docs object is sent to JSON body */
-  test("Document List is sent as response to '/api/v1/docs'", async ({ expect }, done: Function) => {
-    request(app)
-      .get('/api/v1/docs')
-      .expect(200)
-      .then(({ body }) => {
-        expect(body).toBeInstanceOf(Object)
-
-        done()
-      })
-      
-  }).waitForDone();
-
-
-  /** Makes sure an astronomical page parameter returns no documents */
-  test("Documents Page 9999999999999999 returns no documents", async ({ expect }, done: Function) => {
-    request(app)
-      .get('/api/v1/docs/9999999999999999')
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.docs).toHaveLength(0)
-
-        done()
-      })
-  }).waitForDone();
-
-
-  /** Makes sure first page has some documents */
-  test("Documents Page 1 returns some documents", async ({ expect }, done: Function) => {
-    request(app)
-      .get('/api/v1/docs/1')
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.docs.length).toBeGreaterThan(0) 
-
-        done()
-      })
-  }).waitForDone();
-
-  test('Page 0 should throw error', ({ expect }, done: Function) => {
-    request(app)
-      .get('/api/v1/docs/0')
-      .expect(400)
-      .then(() => {
-        
-
-        done()
-      })
-  }).waitForDone();
-
-
-})
+});
