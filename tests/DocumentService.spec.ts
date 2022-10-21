@@ -10,7 +10,7 @@ test.group("Docuemnt Service", () => {
   /** Makes sure a docs object is sent to JSON body */
   test("Multi Doc Good Request", async ({expect}, done: Function) => {
     const documentList = await DocumentService.multiDoc("Alice")
-    expect(documentList).toBeDefined();
+    expect(documentList).toBeTruthy();
   })
 
   test("Multi Doc Bad Request", async ({expect}, done: Function) => {
@@ -23,56 +23,28 @@ test.group("Docuemnt Service", () => {
     
   })
 
-  test("Multi Doc Paged Bad Request", async ({ expect }, done: Function) => {
-    request(app)
-      .get("/api/v1/docs/0")
-      .expect(422)
-      .then(({ body }) => {
-        expect(body.message[0].message).toEqual("Page can only be numbers and must be greater than 0")
+  test("Multi Doc Paged Good Request", async ({ expect }) => {
+    const documentList = await DocumentService.multiDocPaged(1,"Alice");
+    expect(documentList).toBeTruthy()
 
-        done();
-      });
-  }).waitForDone();
+  })
 
-  test("Multi Doc Paged Bad Request", async ({ expect }, done: Function) => {
-    request(app)
-      .get("/api/v1/docs/hello")
-      .expect(422)
-      .then(({ body }) => {
-        expect(body.message[0].message).toEqual("Page can only be numbers and must be greater than 0")
-
-        done();
-      });
-  }).waitForDone();
-
-  /** Makes sure first page has some documents */
-  test("Multi Doc Paged Good Request", async ({expect}, done: Function) => {
-    request(app)
-      .get("/api/v1/docs/1")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.docs.length).toBeGreaterThan(0);
-
-        done();
-      });
-  }).waitForDone();
-
-  test("Single Doc Bad Request", async ({expect}, done:Function) => {
-    request(app)
-      .get('/api/v1/doc/ngofndgodgjrnhdlkeogjlgh')
-      .expect(404)
-      .then(({body}) => {
-        expect(body.message).toEqual("Resource Not Found")
-      })
+  test("Multi Doc Paged Bad Request", async ({ expect }) => {
+    const documentList = await DocumentService.multiDocPaged(9999999999,"Alice");
+    expect(documentList.docs.length).toEqual(0);
   })
 
   test("Single Doc Good Request", async ({expect}, done:Function) => {
-    request(app)
-      .get('/api/v1/doc/test')
-      .expect(200)
-      .then(({body}) => {
-        expect(body).toBeDefined()
-      })
+    const documentList = await DocumentService.singleDoc("facultyTest","Alice");
+    expect(documentList).toBeTruthy();
+  })
+
+  test("Single Doc Bad Request", async ({expect}, done:Function) => {
+    try{
+      const documentList = await DocumentService.singleDoc("studentTest","Alice");
+    }catch(err){
+      expect(err.status).toEqual(403)
+    }
   })
 
 
