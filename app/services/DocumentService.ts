@@ -9,6 +9,11 @@ const prisma = new PrismaClient();
 /**
  * Service for Document that has functions to fetch the documents
  * from the database
+ * 
+ * &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+ * ONCE LOGIN WITH PRISMA STUFF IS MERGED, USE JWT INSTEAD OF UID
+ * &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+ * 
  */
 export const DocumentService = {
     /**
