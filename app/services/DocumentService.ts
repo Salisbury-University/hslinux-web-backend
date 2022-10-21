@@ -1,12 +1,10 @@
 import NotFoundException from "../exceptions/NotFoundException";
-import BadRequestException from "../exceptions/BadRequestException";
 import { marked } from "marked";
 import fs from "fs";
-import jwt from "jsonwebtoken";
 import ForbiddenException from '../exceptions/ForbiddenException'
 import { PrismaClient } from "@prisma/client";
 import UnauthorizedException from "../exceptions/UnauthorizedException";
-import { nextTick } from "process";
+
 const prisma = new PrismaClient();
 /**
  * Service for Document that has functions to fetch the documents

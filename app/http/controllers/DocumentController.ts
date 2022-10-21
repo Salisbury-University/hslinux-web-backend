@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { DocumentService } from "../../services/DocumentService";
-import jwt from "jsonwebtoken";
 import UnauthorizedException from "../../exceptions/UnauthorizedException";
 
 /**

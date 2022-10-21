@@ -1,10 +1,7 @@
 import { test } from "@japa/runner";
-import request from "supertest";
-import { app } from "../app";
 import UnauthorizedException from "../app/exceptions/UnauthorizedException";
 import { DocumentService } from "../app/services/DocumentService";
 
-const supertest = request(app);
 test.group("Docuemnt Service", () => {
 
   /** Makes sure a docs object is sent to JSON body */
@@ -19,14 +16,11 @@ test.group("Docuemnt Service", () => {
     }catch(err){
       expect(err).toBeInstanceOf(UnauthorizedException)
     }
-    
-    
   })
 
   test("Multi Doc Paged Good Request", async ({ expect }) => {
     const documentList = await DocumentService.multiDocPaged(1,"Alice");
     expect(documentList).toBeTruthy()
-
   })
 
   test("Multi Doc Paged Bad Request", async ({ expect }) => {
