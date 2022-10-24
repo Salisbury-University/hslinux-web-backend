@@ -1,8 +1,12 @@
 import UnauthorizedException from "../exceptions/UnauthorizedException";
 import UnprocessableEntityException from "../exceptions/UnprocessableEntityException";
+import { PrismaClient } from '@prisma/client'
 import { config } from "../../config";
 import jwt from "jsonwebtoken";
 import { response } from "express";
+import { decode } from "punycode";
+
+const prisma = new PrismaClient();
 
 export const PreferenceService = {
 
@@ -14,7 +18,7 @@ export const PreferenceService = {
      * TODO Fetch Preferences from DB
      */
 
-    getPreferences(auth) {
+    async getPreferences(auth) {
         //Grab bearer token from header and decode
         const authHeader = auth ? auth : "";
         const authToken = authHeader.split(" ")[1];
@@ -25,9 +29,20 @@ export const PreferenceService = {
             throw new UnauthorizedException();
         }
 
-        //TODO FETCH PREFERENCES FROM DB
+        //Pull uid from the decoded body
+        const uid = decodeBody.uid;
 
-        //return preferences;
+        //Fetch user from databse to grab preferences
+        const preferences = await prisma.preferences.findUnique({
+            where: {
+                uid: uid
+            }
+        });
+
+        //Create object to hold the preferences
+        const preferenceObj = {darkmode: preferences.darkmode};
+        
+        return preferenceObj;
     },
 
     /**
@@ -38,7 +53,7 @@ export const PreferenceService = {
      * @throws UnprocessableEntityException if preference input is invalid
      */
 
-    postPreferences(preferences, auth) {
+    async postPreferences(preferences, auth) {
         //Grab bearer token from header and decode
         const authHeader = auth ? auth : "";
         const authToken = authHeader.split(" ")[1];
@@ -53,10 +68,27 @@ export const PreferenceService = {
         if(!preferences) {
             throw new UnprocessableEntityException();
         }
+
+        //Pull username from decoded body
+        const uid = decodeBody.uid;
         
         //TODO update preferences in database
+        const updatedPreferences = await prisma.preferences.update({
+            where: {
+                uid: uid,
+            },
+            data: {
+                darkmode: preferences.darkmode,
+            }
+         })
+ 
+         //Create return object holding new preferences
+         const returnObj = {preferences: {
+            darkmode: updatedPreferences.darkmode
+        }}
 
-        return preferences;
+        //Return new preferences object
+        return returnObj;
     },
 
 

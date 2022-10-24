@@ -1,12 +1,18 @@
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
-async function generateUsers() {
+async function generateUsers() {    
+  
+  const aliceUid = 'Alice';
+  const bobUid = 'Bob';
+  const chrisUid = 'cxarausa';
+
   const alice = await prisma.user.upsert({
-    where: { username: 'Alice' },
+
+    where: { username: aliceUid },
     update: {},
     create: {
-      username: 'Alice',
+      username: aliceUid,
       password: 'somepass',
       group: 'faculty',
       preferences: {
@@ -18,10 +24,10 @@ async function generateUsers() {
   })
 
   const bob = await prisma.user.upsert({
-    where: { username: 'Bob' },
+    where: { username: bobUid },
     update: {},
     create: {
-      username: 'Bob',
+      username: bobUid,
       password: 'passsome',
       group: 'students',
       preferences: {
@@ -31,43 +37,25 @@ async function generateUsers() {
       }
     },
   })
+
+  const cxarausa = await prisma.user.upsert({
+    where: { username: chrisUid },
+    update: {},
+    create: {
+      username: chrisUid,
+      password: 'somepassword',
+      group: 'faculty',
+      preferences: {
+        create: {
+          darkmode: true,
+        }
+      }
+    },
+  })
 }
-
-// async function generatePreferences() {
-
-//   const aliceUid = 'Alice';
-
-//   const user = prisma.user.findUnique({where: {username: aliceUid}});
-
-
-//   const alicePreference = await prisma.preferences.upsert({
-//     where: {uid: aliceUid }, 
-//     update: {},
-//     create: {
-//       uid: aliceUid,
-//       darkmode: false,
-//       user: user
-//     },
-//   })
-
-//   const bobUid = 'Bob';
-
-//   const bobPreference = await prisma.preferences.upsert({
-//     where: {uid: bobUid }, 
-//     update: {},
-//     create: {
-//       uid: bobUid,
-//       darkmde: false,
-//       user: prisma.user.findUnique({where: {username: bobUid}})
-//     },
-//   })
-  
-// }
-
 
 async function main() {
   await generateUsers();
-  //await generatePreferences();
 }
 
 main()
