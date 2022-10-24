@@ -26,7 +26,7 @@ async function generateUsers() {
       group: 'students',
       preferences: {
         create: {
-          darkmode: true,
+          darkmode: false,
         }
       }
     },
