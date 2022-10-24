@@ -34,7 +34,7 @@ export const PreferenceService = {
      * Changes user preferences after checking if user is logged in
      * 
      * @param req Express request object
-     * @throws UnauthorizedException ifu ser is not logged in
+     * @throws UnauthorizedException ifu ser is not logged inS
      * @throws UnprocessableEntityException if preference input is invalid
      */
 
@@ -54,6 +54,8 @@ export const PreferenceService = {
             throw new UnprocessableEntityException();
         }
         
+        //TODO update preferences in database
+
         return preferences;
     },
 

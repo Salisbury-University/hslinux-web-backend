@@ -8,7 +8,12 @@ async function generateUsers() {
     create: {
       username: 'Alice',
       password: 'somepass',
-      group: 'faculty'
+      group: 'faculty',
+      preferences: {
+        create: {
+          darkmode: true,
+        }
+      }
     },
   })
 
@@ -18,13 +23,51 @@ async function generateUsers() {
     create: {
       username: 'Bob',
       password: 'passsome',
-      group: 'students'
+      group: 'students',
+      preferences: {
+        create: {
+          darkmode: true,
+        }
+      }
     },
   })
 }
 
+// async function generatePreferences() {
+
+//   const aliceUid = 'Alice';
+
+//   const user = prisma.user.findUnique({where: {username: aliceUid}});
+
+
+//   const alicePreference = await prisma.preferences.upsert({
+//     where: {uid: aliceUid }, 
+//     update: {},
+//     create: {
+//       uid: aliceUid,
+//       darkmode: false,
+//       user: user
+//     },
+//   })
+
+//   const bobUid = 'Bob';
+
+//   const bobPreference = await prisma.preferences.upsert({
+//     where: {uid: bobUid }, 
+//     update: {},
+//     create: {
+//       uid: bobUid,
+//       darkmde: false,
+//       user: prisma.user.findUnique({where: {username: bobUid}})
+//     },
+//   })
+  
+// }
+
+
 async function main() {
   await generateUsers();
+  //await generatePreferences();
 }
 
 main()
