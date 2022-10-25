@@ -72,23 +72,30 @@ export const PreferenceService = {
         //Pull username from decoded body
         const uid = decodeBody.uid;
         
-        //TODO update preferences in database
-        const updatedPreferences = await prisma.preferences.update({
-            where: {
-                uid: uid,
-            },
-            data: {
-                darkmode: preferences.darkmode,
-            }
-         })
- 
-         //Create return object holding new preferences
-         const returnObj = {preferences: {
-            darkmode: updatedPreferences.darkmode
-        }}
+        try {
+            //update preferences in database
+            const updatedPreferences = await prisma.preferences.update({
+                where: {
+                    uid: uid,
+                },
+                data: {
+                    darkmode: preferences.darkmode,
+                }
+            })
 
-        //Return new preferences object
-        return returnObj;
+            //Create return object holding new preferences
+            const returnObj = {preferences: {
+                darkmode: updatedPreferences.darkmode
+            }}
+
+            //Return new preferences object
+            return returnObj;
+
+        } catch(err) {
+            throw new UnprocessableEntityException();
+        }
+
+       
     },
 
 
