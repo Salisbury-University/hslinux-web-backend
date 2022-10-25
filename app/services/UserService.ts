@@ -27,17 +27,11 @@ export const UserService = {
                 }
             })
 
-            if(!user) {
-                throw new UnauthorizedException();
-            }
-
-            //Throw exception if user is not found
-
             //Create an object with the username and group to return to controller
             const returnObj = {id: user.username, groups: user.group}
             return returnObj;
         } catch(err) {
-            return new UnprocessableEntityException();
+            throw new UnauthorizedException();
         }
     
     },

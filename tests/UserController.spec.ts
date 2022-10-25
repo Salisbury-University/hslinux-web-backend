@@ -2,6 +2,7 @@ import { test } from "@japa/runner";
 import request from "supertest";
 import { app } from "../app";
 import { PrismaClient } from "@prisma/client";
+import UnauthorizedException from "../app/exceptions/UnauthorizedException";
 
 const prisma = new PrismaClient();
 
