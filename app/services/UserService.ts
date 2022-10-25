@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import axios from "axios";
 import UnauthorizedException from "../exceptions/UnauthorizedException";
+import UnprocessableEntityException from '../exceptions/UnprocessableEntityException';
 const prisma = new PrismaClient();
 
 
@@ -19,24 +20,25 @@ export const UserService = {
             throw new UnauthorizedException();
         } 
 
-        /* TODO once LDAP is running, make axios request to have data returned
-           Mock data will be returned as of right now 
-         */
-        const user = await prisma.user.findUnique({
-            where: {
-                username: uid
+        try {
+            const user = await prisma.user.findUnique({
+                where: {
+                    username: uid
+                }
+            })
+
+            if(!user) {
+                throw new UnauthorizedException();
             }
-        })
 
-        if(!user) {
-            throw new UnauthorizedException();
+            //Throw exception if user is not found
+
+            //Create an object with the username and group to return to controller
+            const returnObj = {id: user.username, groups: user.group}
+            return returnObj;
+        } catch(err) {
+            return new UnprocessableEntityException();
         }
-
-        //Throw exception if user is not found
-
-        //Create an object with the username and group to return to controller
-        const returnObj = {id: user.username, groups: user.group}
-        return returnObj;       
     
     },
 };
