@@ -89,22 +89,6 @@ export const AuthService = {
    * @throws UnauthorizedException if LDAP Authentication fails
    */
   async login(uid: string, password: string) {
-    //Make post request to api using axios
-    // return await axios({
-    //   method: "post",
-    //   url: config.auth.AUTH_URL,
-    //   data: {
-    //     uid: uid,
-    //     password: password,
-    //   },
-    // })
-    //   .then((response) => {
-    //     return response.data.token;
-    //   })
-    //   .catch((err) => {
-    //     throw new UnauthorizedException();
-    //   });
-
     /**
      * Mocking API using the prisma testing account database
      * 
@@ -113,20 +97,25 @@ export const AuthService = {
      * 
      * Then a fake token will be signed and returned
      */
-    const user = await prisma.user.findUnique({
-      where: {
-        username: uid
-      }
-    })
+    try {
+        const user = await prisma.user.findUnique({
+          where: {
+            username: uid
+          }
+        })
 
-    if(!user) {
-      throw new UnauthorizedException();
-    }
+        if(!user) {
+          throw new UnauthorizedException();
+        }
 
-    if(password == user.password) {
-      return jwt.sign(uid, "SuperSecretSecret");
-    }
-    else {
+        if(password == user.password) {
+          return jwt.sign(uid, "SuperSecretSecret");
+        }
+        else {
+          throw new UnauthorizedException();
+        }
+
+    } catch (err) {
       throw new UnauthorizedException();
     }
   },
