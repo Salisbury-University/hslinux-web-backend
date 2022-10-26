@@ -1,24 +1,55 @@
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
-async function generateUsers() {
+async function generateUsers() {    
+  
+  const aliceUid = 'Alice';
+  const bobUid = 'Bob';
+  const chrisUid = 'cxarausa';
+
   const alice = await prisma.user.upsert({
-    where: { username: 'Alice' },
+
+    where: { username: aliceUid },
     update: {},
     create: {
-      username: 'Alice',
+      username: aliceUid,
       password: 'somepass',
-      group: 'faculty'
+      group: 'faculty',
+      preferences: {
+        create: {
+          darkmode: true,
+        }
+      }
     },
   })
 
   const bob = await prisma.user.upsert({
-    where: { username: 'Bob' },
+    where: { username: bobUid },
     update: {},
     create: {
-      username: 'Bob',
+      username: bobUid,
       password: 'passsome',
-      group: 'students'
+      group: 'students',
+      preferences: {
+        create: {
+          darkmode: false,
+        }
+      }
+    },
+  })
+
+  const cxarausa = await prisma.user.upsert({
+    where: { username: chrisUid },
+    update: {},
+    create: {
+      username: chrisUid,
+      password: 'somepassword',
+      group: 'faculty',
+      preferences: {
+        create: {
+          darkmode: true,
+        }
+      }
     },
   })
 }

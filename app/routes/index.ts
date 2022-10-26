@@ -37,6 +37,10 @@ router.use("/api/v1/docs", MultiDocumentRouter);
 //Router to fetch one document
 router.use("/api/v1/doc", SingleDocumentRouter);
 
+//Import preference router
+import PreferenceRouter from "./preference";
+router.use("/api/v1/preferences", PreferenceRouter);
+
 import { parseFrontmatter } from "../services/DocumentService";
 /** Parse through frontmatter to be stored on server start and then every 1 minute */
 parseFrontmatter();
