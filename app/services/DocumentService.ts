@@ -111,53 +111,52 @@ export const DocumentService = {
    * @returns ID, Content, and metadata of markdown file of given ID
    */
   async singleDoc(id,uid) {
-    /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
-    try{
-      const user = await prisma.user.findUnique({
-        where: {
-          username: uid,
-        },
-      });
+      
     
+    /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
+    const user = await prisma.user.findUnique({
+      where: {
+        username: uid,
+      },
+    });
+    
+  
 
 
-      if(!user)
-        throw new UnauthorizedException();
-
-      /** Documents Dictionary Object */
-      const documents = getFrontmatter();
-
-      /**
-       * Finds document in database using ID
-       */
-      const document = documents[id]
-
-      /**
-       * TO-DO
-       * CHECK THIS USERS GROUP AGAINST DOCS DICTIONARY OBJ TO MAKE SURE THEY MATCH
-       * RETURN 403 IF THEY DONT MATCH
-       */
-      if (!document) 
-        throw new NotFoundException()
-      else if(user.group == document.group){
-        return {
-          id: id,
-          content: document.content,
-          metadata: {
-            title: document.title,
-            description: document.description,
-            author: document.author,
-            group: document.group,
-            dateCreated: document.createdDate,
-            dateUpdated: document.updatedDate
-          }
-        }
-      }else{
-        throw new ForbiddenException();
-      }
-    }catch(err){
+    if(!user)
       throw new UnauthorizedException();
+    
+    /** Documents Dictionary Object */
+    const documents = getFrontmatter();
+
+    /**
+     * Finds document in database using ID
+     */
+    const document = documents[id]
+    /**
+     * TO-DO
+     * CHECK THIS USERS GROUP AGAINST DOCS DICTIONARY OBJ TO MAKE SURE THEY MATCH
+     * RETURN 403 IF THEY DONT MATCH
+     */
+    if (!document) 
+      throw new NotFoundException()
+    else if(user.group == document.group){
+      return {
+        id: id,
+        content: document.content,
+        metadata: {
+          title: document.title,
+          description: document.description,
+          author: document.author,
+          group: document.group,
+          dateCreated: document.createdDate,
+          dateUpdated: document.updatedDate
+        }
+      }
+    }else{
+      throw new ForbiddenException();
     }
+    
   }
 }
 /** MARKDOWN FRONTMATTER PARSING */

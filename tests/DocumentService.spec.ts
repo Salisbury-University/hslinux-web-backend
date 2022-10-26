@@ -1,6 +1,7 @@
 import { test } from "@japa/runner";
 import UnauthorizedException from "../app/exceptions/UnauthorizedException";
 import { DocumentService } from "../app/services/DocumentService";
+import ForbiddenException from "../app/exceptions/ForbiddenException"
 
 test.group("Docuemnt Service", () => {
 
@@ -37,8 +38,9 @@ test.group("Docuemnt Service", () => {
     try{
       const documentList = await DocumentService.singleDoc("studentTest","Alice");
     }catch(err){
-      expect(err.status).toEqual(403)
+      expect(err.status).toEqual(403);
     }
+    
   })
 
 
