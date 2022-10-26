@@ -2,11 +2,10 @@ import UnauthorizedException from "../exceptions/UnauthorizedException";
 import JWTMalformedException from "../exceptions/JWTMalformedException";
 import { config } from "../../config";
 import jwt from "jsonwebtoken";
-import {PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import e from "express";
 
 const prisma = new PrismaClient();
-
 
 //TODO - Consider throwing errors instead of returning true/false
 
@@ -14,7 +13,6 @@ const prisma = new PrismaClient();
  * An example of an authorization service to validate authorization tokens, or attempt sign ins.
  */
 export const AuthService = {
-
   /**
    * Validates an authorization token for authentication by decoding jwt
    * and attempting a login request with decoded body
@@ -30,9 +28,9 @@ export const AuthService = {
     //Verify user credentials from decoded jwt by attempting to login
     const decodeBody = jwt.decode(authToken);
     //MAKE SURE DECODEBODY IS NOT NULL
-    if(!decodeBody) {
+    if (!decodeBody) {
       throw new JWTMalformedException();
-    }    
+    }
   },
 
   /**
@@ -42,12 +40,11 @@ export const AuthService = {
    * @throws Unauthorized Exception if authHader is not bearer
    */
   checkBearer(authHeader: String) {
-   
     //Check if auth header is correct length
     if (authHeader.split(" ").length > 2) {
       throw new UnauthorizedException();
     }
-   
+
     const authType = authHeader.split(" ")[0];
 
     if (authType != "Bearer") {
@@ -56,10 +53,9 @@ export const AuthService = {
 
     const authToken = authHeader && authHeader.split(" ")[1];
 
-    if(!authToken) {
+    if (!authToken) {
       throw new UnauthorizedException();
     }
-
   },
 
   /**
@@ -70,15 +66,14 @@ export const AuthService = {
    */
 
   decodeToken(authToken: String) {
-    const uid : JSON = jwt.decode(authToken);
+    const uid: JSON = jwt.decode(authToken);
 
-    if(!uid) {
+    if (!uid) {
       throw new JWTMalformedException();
     }
 
     return uid;
   },
-
 
   /**
    * Handles sign in attempts from users
@@ -91,30 +86,28 @@ export const AuthService = {
   async login(uid: string, password: string) {
     /**
      * Mocking API using the prisma testing account database
-     * 
+     *
      * First the user information will be found from the database and stored in user
      * The database password will be used to verify the password passed in
-     * 
+     *
      * Then a fake token will be signed and returned
      */
     try {
-        const user = await prisma.user.findUnique({
-          where: {
-            username: uid
-          }
-        })
+      const user = await prisma.user.findUnique({
+        where: {
+          username: uid,
+        },
+      });
 
-        if(!user) {
-          throw new UnauthorizedException();
-        }
+      if (!user) {
+        throw new UnauthorizedException();
+      }
 
-        if(password == user.password) {
-          return jwt.sign(uid, "SuperSecretSecret");
-        }
-        else {
-          throw new UnauthorizedException();
-        }
-
+      if (password == user.password) {
+        return jwt.sign({ uid: uid }, "SuperSecretSecret");
+      } else {
+        throw new UnauthorizedException();
+      }
     } catch (err) {
       throw new UnauthorizedException();
     }
