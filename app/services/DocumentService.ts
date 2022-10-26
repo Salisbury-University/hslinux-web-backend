@@ -18,7 +18,8 @@ const prisma = new PrismaClient();
 export const DocumentService = {
     /**
      * Grabs all of the documents and returns the document IDs in a list
-     * @param auth Authorization header
+     * @param uid Username ID
+     * @throws 'UnauthorizedException' when user doesnt exist
      */
     async multiDoc(uid) {
     
@@ -56,16 +57,13 @@ export const DocumentService = {
    * Page 1 takes documents 1-10,
    * Page 2 takes documents 11-20,
    * etc.
-   * @param req Express Request
-   * @param res Express Response
-   * @throws 'BadRequestException' when the page is less than 1 or contains letters
+   * @param page Page number
+   * @param uid Username ID
+   * @throws 'UnauthorizedException' when user doesnt exist
    * @returns List of Document IDs
    */
   async multiDocPaged(page,uid) {
     /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
-
-    const pageAsInt = parseInt(page, 10);
-
 
     const user = await prisma.user.findUnique({
       where: {
@@ -103,11 +101,15 @@ export const DocumentService = {
   /**
    * Takes the id from the request and looks for it in the
    * dictionary object
-   * If the document is not there, sends a '404 Not Found' status.
-   * If the document is found, returns id, content, and metadata
-   * @param auth Authorization token
+   * If the document is not there, throw NotFoundException
+   * If the document is found, check group attribute for user against document group, 
+   * if they match, returns id, content, and metadata,
+   * if they dont match, throw ForbiddenException
    * @param id Document ID
-   * @throws 'NotFoundException' when the document id given does not exist
+   * @param uid Username ID
+   * @throws 'UnauthorizedException' when user doesnt exist
+   * @throws 'NotFoundException' when a document with given id given does not exist
+   * @throws 'ForbiddenException' when user group doesn't match document group
    * @returns ID, Content, and metadata of markdown file of given ID
    */
   async singleDoc(id,uid) {
@@ -133,14 +135,10 @@ export const DocumentService = {
      * Finds document in database using ID
      */
     const document = documents[id]
-    /**
-     * TO-DO
-     * CHECK THIS USERS GROUP AGAINST DOCS DICTIONARY OBJ TO MAKE SURE THEY MATCH
-     * RETURN 403 IF THEY DONT MATCH
-     */
-    if (!document) 
+
+    if (!document) //document doesnt exist
       throw new NotFoundException()
-    else if(user.group == document.group){
+    else if(user.group == document.group){ //group matches
       return {
         id: id,
         content: document.content,
@@ -153,7 +151,7 @@ export const DocumentService = {
           dateUpdated: document.updatedDate
         }
       }
-    }else{
+    }else{ //if group doesnt match
       throw new ForbiddenException();
     }
     
