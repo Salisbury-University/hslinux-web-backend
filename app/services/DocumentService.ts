@@ -22,33 +22,33 @@ export const DocumentService = {
      */
     async multiDoc(uid) {
     
-        const user = await prisma.user.findUnique({
-          where: {
-            username: uid, //Testing for now, retrieve user info then check in db
-          },
-        });
-        
-        if(!user)
-          throw new UnauthorizedException();
+      const user = await prisma.user.findUnique({
+        where: {
+          username: uid, //Testing for now, retrieve user info then check in db
+        },
+      });
+      
+      if(!user)
+        throw new UnauthorizedException();
 
-    const documents = getFrontmatter();
+      const documents = getFrontmatter();
 
-    /** Body to add the document IDs to */
-    const documentList = {
-      docs: [],
-    };
+      /** Body to add the document IDs to */
+      const documentList = {
+        docs: [],
+      };
 
-    /**
-     * Loops through retrieved documents, checks if user has right group, 
-     * if it does, push Document ID into docs property of documentList
-     */
-    for (const id of Object.keys(documents)) {
-      if(user.group == documents[id].group)
-        documentList.docs.push(id);
-    }
+      /**
+       * Loops through retrieved documents, checks if user has right group, 
+       * if it does, push Document ID into docs property of documentList
+       */
+      for (const id of Object.keys(documents)) {
+        if(user.group == documents[id].group)
+          documentList.docs.push(id);
+      }
 
-    //Send the list of Document IDs to Body
-    return documentList;
+      //Send the list of Document IDs to Body
+      return documentList;
   },
 
   /**
@@ -112,46 +112,51 @@ export const DocumentService = {
    */
   async singleDoc(id,uid) {
     /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
+    try{
+      const user = await prisma.user.findUnique({
+        where: {
+          username: uid,
+        },
+      });
+    
 
-    const user = await prisma.user.findUnique({
-      where: {
-        username: uid,
-      },
-    });
 
-    if(!user)
-      throw new UnauthorizedException();
+      if(!user)
+        throw new UnauthorizedException();
 
-    /** Documents Dictionary Object */
-    const documents = getFrontmatter();
+      /** Documents Dictionary Object */
+      const documents = getFrontmatter();
 
-    /**
-     * Finds document in database using ID
-     */
-    const document = documents[id]
+      /**
+       * Finds document in database using ID
+       */
+      const document = documents[id]
 
-    /**
-     * TO-DO
-     * CHECK THIS USERS GROUP AGAINST DOCS DICTIONARY OBJ TO MAKE SURE THEY MATCH
-     * RETURN 403 IF THEY DONT MATCH
-     */
-    if (!document) 
-      throw new NotFoundException()
-    else if(user.group == document.group){
-      return {
-        id: id,
-        content: document.content,
-        metadata: {
-          title: document.title,
-          description: document.description,
-          author: document.author,
-          group: document.group,
-          dateCreated: document.createdDate,
-          dateUpdated: document.updatedDate
+      /**
+       * TO-DO
+       * CHECK THIS USERS GROUP AGAINST DOCS DICTIONARY OBJ TO MAKE SURE THEY MATCH
+       * RETURN 403 IF THEY DONT MATCH
+       */
+      if (!document) 
+        throw new NotFoundException()
+      else if(user.group == document.group){
+        return {
+          id: id,
+          content: document.content,
+          metadata: {
+            title: document.title,
+            description: document.description,
+            author: document.author,
+            group: document.group,
+            dateCreated: document.createdDate,
+            dateUpdated: document.updatedDate
+          }
         }
+      }else{
+        throw new ForbiddenException();
       }
-    }else{
-      throw new ForbiddenException();
+    }catch(err){
+      throw new UnauthorizedException();
     }
   }
 }
