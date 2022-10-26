@@ -82,6 +82,8 @@ export const PreferenceService = {
 
     const uid = auth.uid;
 
+    console.log(preferences.darkmode);
+
     try {
       //update preferences in database
       const updatedPreferences = await prisma.preferences.update({
@@ -92,6 +94,7 @@ export const PreferenceService = {
           darkmode: preferences.darkmode,
         },
       });
+      console.log(updatedPreferences);
 
       //Create return object holding new preferences
       const returnObj = {

@@ -32,8 +32,11 @@ export const PreferenceController = {
    */
   async postPreferences(req: Request, res: Response, next: NextFunction) {
     try {
-      await PreferenceService.postPreferences(req.body, req.user);
-      res.sendStatus(200);
+      const preferences = await PreferenceService.postPreferences(
+        req.body.preferences,
+        req.user
+      );
+      res.send(preferences);
     } catch (err) {
       return next(err);
     }
