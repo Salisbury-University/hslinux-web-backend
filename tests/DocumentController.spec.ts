@@ -26,7 +26,6 @@ test.group("Document Controller", () => {
     request(app)
       .get("/api/v1/doc/test")
       .then(( {body} ) => {
-        console.log(body)
         expect(body).toBeDefined();
         done();
       });

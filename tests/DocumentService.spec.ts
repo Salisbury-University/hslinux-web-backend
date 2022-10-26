@@ -62,9 +62,9 @@ test.group("Docuemnt Service", () => {
   test("Single Doc Good Request", async ({expect}, done:Function) => {
     request(app)
       .get('/api/v1/doc/test')
-      .expect(404)
+      .expect(200)
       .then(({body}) => {
-        expect(body.message).toEqual("Resource Not Found")
+        expect(body).toBeDefined()
       })
   })
 

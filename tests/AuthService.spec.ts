@@ -11,8 +11,8 @@ test.group("AuthService", (group) => {
   //Login with good user credentials
   test("AuthService Good Login", async ({ expect }, done: Function) => {
     //username and password consistent with project spec
-    const username = "cxarausa";
-    const password = "testing";
+    const username = "Bob";
+    const password = "passsome";
 
     //Expecting the login function in AuthService to return the token
     const token = await AuthService.login(username, password);

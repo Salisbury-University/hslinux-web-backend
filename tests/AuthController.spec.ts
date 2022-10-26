@@ -9,8 +9,8 @@ test.group("AuthController", (group) => {
 
   //Testing user login
   test("AuthController Good Login", async ({ expect }, done: Function) => {
-    const username = "cxarausa";
-    const password = "testing";
+    const username = "Bob";
+    const password = "passsome";
 
     request(app)
       .post("/api/v1/auth/login")
