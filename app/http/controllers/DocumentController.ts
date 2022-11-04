@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { DocumentService } from "../../services/DocumentService";
 import UnauthorizedException from "../../exceptions/UnauthorizedException";
+import { AuthService } from "../../services/AuthService";
+import jwt from "jsonwebtoken"
+import JWTMalformedException from "../../exceptions/JWTMalformedException";
 
 /**
  * Controller for Routes for Fetching Documents
@@ -18,8 +21,10 @@ export const DocumentController = {
   async multiDoc(req: Request, res: Response, next: NextFunction) {
 
     try {
-      if(req.body.uid == null) //check if uid is passed in body before sending to service
-        throw new UnauthorizedException()
+      //console.log(req.user);
+      const uid = JSON.stringify(req.user);
+      
+      console.log(JSON.parse(uid).uid)
       const documents = await DocumentService.multiDoc(req.body.uid);
       res.send(documents);
       return next;
@@ -39,10 +44,10 @@ export const DocumentController = {
    */
   async multiDocPaged(req: Request, res: Response, next: NextFunction) {
     try {
-      if(req.body.uid == null) //check if uid is passed in body before sending to service
-        throw new UnauthorizedException();
+      AuthService.validate(req.headers.authorization)
+      const decodedToken = jwt.decode(req.headers.authorization.split(" ")[1])
       /** Holds paged documents */
-      const documentsPaged = await DocumentService.multiDocPaged(req.params.page,req.body.uid);
+      const documentsPaged = await DocumentService.multiDocPaged(req.params.page,decodedToken.uid);
       res.send(documentsPaged);
     } catch (err) {
       return next(err);
@@ -60,9 +65,16 @@ export const DocumentController = {
    */
   async singleDoc(req: Request, res: Response, next: NextFunction) {
     try {
-      if(req.body.uid == null) //check if uid is passed in body before sending to service
-        throw new UnauthorizedException();
-      const singleDocument = await DocumentService.singleDoc(req.params.id,req.body.uid);
+      if(req.headers.authorization == null)
+        throw new JWTMalformedException();
+      AuthService.checkBearer(req.headers.authorization)
+      AuthService.validate(req.headers.authorization)
+
+      
+      const decodedToken = jwt.decode(req.headers.authorization.split(" ")[1])
+      console.log(decodedToken);
+      const singleDocument = await DocumentService.singleDoc(req.params.id,decodedToken.uid);
+      
       res.send(singleDocument);
       
     } catch (err) {

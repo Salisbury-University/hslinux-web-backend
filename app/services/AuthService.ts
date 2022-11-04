@@ -41,7 +41,7 @@ export const AuthService = {
   checkBearer(authHeader: String) {
    
     //Check if auth header is correct length
-    if (authHeader.split(" ").length > 2) {
+    if (authHeader.split(" ").length != 2) {
       throw new UnauthorizedException();
     }
    

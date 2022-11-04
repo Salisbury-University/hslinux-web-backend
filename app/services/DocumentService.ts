@@ -22,7 +22,6 @@ export const DocumentService = {
      * @throws 'UnauthorizedException' when user doesnt exist
      */
     async multiDoc(uid) {
-    
       const user = await prisma.user.findUnique({
         where: {
           username: uid, //Testing for now, retrieve user info then check in db
