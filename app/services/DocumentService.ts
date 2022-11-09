@@ -5,6 +5,7 @@ import ForbiddenException from "../exceptions/ForbiddenException";
 import { PrismaClient } from "@prisma/client";
 import UnauthorizedException from "../exceptions/UnauthorizedException";
 import UnprocessableEntityException from "../exceptions/UnprocessableEntityException";
+import { isBuffer } from "util";
 
 const prisma = new PrismaClient();
 /**
@@ -115,14 +116,17 @@ export const DocumentService = {
    * @returns ID, Content, and metadata of markdown file of given ID
    */
   async singleDoc(id, uid) {
+    let user;
     try {
       /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
-      const user = await prisma.user.findUnique({
+      user = await prisma.user.findUnique({
         where: {
           username: uid,
         },
       });
-
+    } catch (err) {
+      throw new UnprocessableEntityException();
+    } finally {
       if (!user) throw new UnauthorizedException();
 
       /** Documents Dictionary Object */
@@ -154,8 +158,6 @@ export const DocumentService = {
         //if group doesnt match
         throw new ForbiddenException();
       }
-    } catch (err) {
-      throw new UnprocessableEntityException();
     }
   },
 };
@@ -183,7 +185,6 @@ export function parseFrontmatter() {
         //Pull file name and store in id
         const id = file.substring(0, file.length - 3);
 
-
         /** Tokenized markdown code */
         const token = marked.lexer(data);
 
@@ -195,21 +196,24 @@ export function parseFrontmatter() {
         const docTitleValue = titleKeyValue[1];
 
         //Check if assumption that title is first data member is true if not throw Unprocessable Error
-        if(docTitleKey != "title"){
+        if (docTitleKey != "title") {
           throw new UnprocessableEntityException();
         }
 
         //Append title to docs object
-        docs[id] = appendFrontMatter(docs[id] || {}, docTitleKey, docTitleValue);
+        docs[id] = appendFrontMatter(
+          docs[id] || {},
+          docTitleKey,
+          docTitleValue
+        );
 
-
-        for(let i=1; i<frontMatter.length; i++) {
+        for (let i = 1; i < frontMatter.length; i++) {
           const keyValue = frontMatter[i].split(": ");
           const key = keyValue[0];
           const value = keyValue[1];
-          
+
           //Append new key value pair to the return object
-          docs[id] = appendFrontMatter(docs[id] || {}, key, value);       
+          docs[id] = appendFrontMatter(docs[id] || {}, key, value);
         }
 
         var dataWithoutFrontmatter = "";
@@ -218,7 +222,11 @@ export function parseFrontmatter() {
           dataWithoutFrontmatter = dataWithoutFrontmatter + dataToken[i].raw;
         }
 
-        docs[id] = appendFrontMatter(docs[id] || {}, "content", dataWithoutFrontmatter);
+        docs[id] = appendFrontMatter(
+          docs[id] || {},
+          "content",
+          dataWithoutFrontmatter
+        );
       });
     }
   });
@@ -226,9 +234,9 @@ export function parseFrontmatter() {
 
 /**
  * Function used in parsefrontMatter function
- * to append new data being parsed to the 
+ * to append new data being parsed to the
  * docs[id] object
- * 
+ *
  * @param doc The document being worked on currently
  * @param key the key for the appending value
  * @param value the value associated with the key
@@ -236,22 +244,23 @@ export function parseFrontmatter() {
 function appendFrontMatter(doc, key, value) {
   //If statement to detect if frontmatter data is a date
   //If so a new Date object must be initialized
-  if(key == "created") {
+  if (key == "created") {
     const createDate = new Date(value);
     doc[key] = createDate;
-  } else if(key == "updated") {
+  } else if (key == "updated") {
     const updateDate = new Date(value);
     doc[key] = updateDate;
   } else {
     //Remove quotation marks from the value to display correctly
-    if(value.substring(0,1) == "\"" && value.substring(value.length-1, value.length) == "\""){
-      const valueNoQuote = value.substring(1, value.length-1);
+    if (
+      value.substring(0, 1) == '"' &&
+      value.substring(value.length - 1, value.length) == '"'
+    ) {
+      const valueNoQuote = value.substring(1, value.length - 1);
       doc[key] = valueNoQuote;
-    }
-    else {
+    } else {
       doc[key] = value;
     }
-
   }
   return doc;
 }
