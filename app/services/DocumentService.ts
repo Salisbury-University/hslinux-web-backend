@@ -1,8 +1,12 @@
 import NotFoundException from "../exceptions/NotFoundException";
 import { marked } from "marked";
 import fs from "fs";
+import ForbiddenException from "../exceptions/ForbiddenException";
+import { PrismaClient } from "@prisma/client";
+import UnauthorizedException from "../exceptions/UnauthorizedException";
 import UnprocessableEntityException from "../exceptions/UnprocessableEntityException";
 
+const prisma = new PrismaClient();
 /**
  * Service for Document that has functions to fetch the documents
  * from the database
@@ -10,29 +14,40 @@ import UnprocessableEntityException from "../exceptions/UnprocessableEntityExcep
 export const DocumentService = {
   /**
    * Grabs all of the documents and returns the document IDs in a list
-   * @param req Express Request
-   * @param res Express Response
+   * @param uid Username ID
+   * @throws 'UnauthorizedException' when user doesnt exist
+   * @throws 'UnprocessableEntityException' when prisma throws error
    */
-  async multiDoc() {
-    const documents = getFrontmatter();
+  async multiDoc(uid) {
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          username: uid, //Testing for now, retrieve user info then check in db
+        },
+      });
 
-    /** Body to add the document IDs to */
-    const documentList = {
-      docs: [],
-    };
+      if (!user) throw new UnauthorizedException();
 
-    /**
-     * Loops through retrieved documents and pushes Document IDs
-     * into docs property of documentList
-     *
-     * Later on, we'll need to check if we have access to this document
-     */
-    for (const id of Object.keys(documents)) {
-      documentList.docs.push(id);
+      const documents = getFrontmatter();
+
+      /** Body to add the document IDs to */
+      const documentList = {
+        docs: [],
+      };
+
+      /**
+       * Loops through retrieved documents, checks if user has right group,
+       * if it does, push Document ID into docs property of documentList
+       */
+      for (const id of Object.keys(documents)) {
+        if (user.group == documents[id].group) documentList.docs.push(id);
+      }
+
+      //Send the list of Document IDs to Body
+      return documentList;
+    } catch (err) {
+      throw new UnprocessableEntityException();
     }
-
-    //Send the list of Document IDs to Body
-    return documentList;
   },
 
   /**
@@ -40,79 +55,110 @@ export const DocumentService = {
    * Page 1 takes documents 1-10,
    * Page 2 takes documents 11-20,
    * etc.
-   * @param req Express Request
-   * @param res Express Response
-   * @throws 'BadRequestException' when the page is less than 1 or contains letters
+   * @param page Page number
+   * @param uid Username ID
+   * @throws 'UnauthorizedException' when user doesnt exist
+   * @throws 'UnprocessableEntityException' when prisma throws error
    * @returns List of Document IDs
    */
-  async multiDocPaged(page) {
-    const documents = getFrontmatter();
+  async multiDocPaged(page, uid) {
+    try {
+      /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
+      const user = await prisma.user.findUnique({
+        where: {
+          username: uid, //Testing for now, retrieve user info then check in db
+        },
+      });
 
-    /** Skips this number of documents */
-    const skip = (page - 1) * 10;
+      if (!user) throw new UnauthorizedException();
 
-    /** Body to add the document IDs to */
-    const documentList = {
-      docs: [],
-    };
+      const documents = getFrontmatter();
 
-    /**
-     * Loops through retrieved documents and pushes Document IDs
-     * into docs property of documentList
-     *
-     * Later on, we'll need to check if we have access to this document
-     * with group attribute
-     */
-    let index = 0,
-      docCount = 0;
-    for (const id of Object.keys(documents)) {
-      if (index >= skip && docCount <= 10) {
-        documentList.docs.push(id);
-        docCount++;
-      }
-      index++;
+      /** Skips this number of documents */
+      const skip = (page - 1) * 10;
+
+      /** Body to add the document IDs to */
+      const documentList = {
+        docs: [],
+      };
+
+      /**
+       * Loops through retrieved documents and pushes Document IDs
+       * into docs property of documentList
+       *
+       * Later on, we'll need to check if we have access to this document
+       * with group attribute
+       */
+      for (let i = skip; i < Object.keys(documents).length; i++)
+        if (user.group == documents[Object.keys(documents)[i]].group)
+          documentList.docs.push(Object.keys(documents)[i]);
+
+      return documentList;
+    } catch (err) {
+      throw new UnprocessableEntityException();
     }
-
-    /** Sends list of Document IDs to JSON Body */
-    return documentList;
   },
 
   /**
    * Takes the id from the request and looks for it in the
    * dictionary object
-   * If the document is not there, sends a '404 Not Found' status.
-   * If the document is found, returns id, content, and metadata
-   * @param req Express Request
-   * @param res Express Response
-   * @throws 'NotFoundException' when the document id given does not exist
+   * If the document is not there, throw NotFoundException
+   * If the document is found, check group attribute for user against document group,
+   * if they match, returns id, content, and metadata,
+   * if they dont match, throw ForbiddenException
+   * @param id Document ID
+   * @param uid Username ID
+   * @throws 'UnauthorizedException' when user doesnt exist
+   * @throws 'NotFoundException' when a document with given id given does not exist
+   * @throws 'ForbiddenException' when user group doesn't match document group
+   * @throws 'UnprocessableEntityException' when prisma throws error
    * @returns ID, Content, and metadata of markdown file of given ID
    */
-  async singleDoc(id) {
-    const docsObj = getFrontmatter();
-
-    /** Finds document in database using ID */
-    const document = docsObj[id];
-
-    //document not found
-    if (!document) throw new NotFoundException();
-    else {
-      //document found
-      return {
-        id: id,
-        content: document.content,
-        metadata: {
-          title: document.title,
-          description: document.description,
-          author: document.author,
-          group: document.group,
-          dateCreated: document.created,
-          dateUpdated: document.updated,
+  async singleDoc(id, uid) {
+    try {
+      /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
+      const user = await prisma.user.findUnique({
+        where: {
+          username: uid,
         },
-      };
+      });
+
+      if (!user) throw new UnauthorizedException();
+
+      /** Documents Dictionary Object */
+      const documents = getFrontmatter();
+
+      /**
+       * Finds document in database using ID
+       */
+      const document = documents[id];
+
+      if (!document)
+        //document doesnt exist
+        throw new NotFoundException();
+      else if (user.group == document.group) {
+        //group matches
+        return {
+          id: id,
+          content: document.content,
+          metadata: {
+            title: document.title,
+            description: document.description,
+            author: document.author,
+            group: document.group,
+            dateCreated: document.createdDate,
+            dateUpdated: document.updatedDate,
+          },
+        };
+      } else {
+        //if group doesnt match
+        throw new ForbiddenException();
+      }
+    } catch (err) {
+      throw new UnprocessableEntityException();
     }
   },
 };
-
 /** MARKDOWN FRONTMATTER PARSING */
 
 /** Holds frontmatter and markdown from the .md files */

@@ -15,9 +15,14 @@ export const DocumentController = {
    * @returns
    */
   async multiDoc(req: Request, res: Response, next: NextFunction) {
-    const documents = await DocumentService.multiDoc();
-    res.send(documents);
-    return next;
+    try {
+      const uid = JSON.parse(JSON.stringify(req.user)).uid;
+      const documents = await DocumentService.multiDoc(uid);
+      res.send(documents);
+      return next;
+    } catch (err) {
+      return next(err);
+    }
   },
 
   /**
@@ -31,7 +36,12 @@ export const DocumentController = {
    */
   async multiDocPaged(req: Request, res: Response, next: NextFunction) {
     try {
-      const documentsPaged = await DocumentService.multiDocPaged(req.params.page);
+      const uid = JSON.parse(JSON.stringify(req.user)).uid;
+      /** Holds paged documents */
+      const documentsPaged = await DocumentService.multiDocPaged(
+        req.params.page,
+        uid
+      );
       res.send(documentsPaged);
     } catch (err) {
       return next(err);
@@ -39,7 +49,8 @@ export const DocumentController = {
   },
 
   /**
-   * Sends ID in Request object parameters to singleDoc service.
+   * Checks if user has access to the document with auth token
+   * Sends Request and Response to singleDoc service.
    * Uses route '/api/v1/doc/:id'.
    * ":id" is the id of the markdown file
    * @param req Express Request object
@@ -48,7 +59,12 @@ export const DocumentController = {
    */
   async singleDoc(req: Request, res: Response, next: NextFunction) {
     try {
-      const singleDocument = await DocumentService.singleDoc(req.params.id);
+      const uid = JSON.parse(JSON.stringify(req.user)).uid;
+      const singleDocument = await DocumentService.singleDoc(
+        req.params.id,
+        uid
+      );
+
       res.send(singleDocument);
     } catch (err) {
       return next(err);
