@@ -15,14 +15,13 @@ export const DocumentController = {
    * @returns
    */
   async multiDoc(req: Request, res: Response, next: NextFunction) {
-
     try {
-      const uidJSON = JSON.stringify(req.user);
-      const documents = await DocumentService.multiDoc(JSON.parse(uidJSON).uid);
+      const uid = JSON.parse(JSON.stringify(req.user)).uid;
+      const documents = await DocumentService.multiDoc(uid);
       res.send(documents);
       return next;
-    }catch(err){
-      return next(err)
+    } catch (err) {
+      return next(err);
     }
   },
 
@@ -37,9 +36,12 @@ export const DocumentController = {
    */
   async multiDocPaged(req: Request, res: Response, next: NextFunction) {
     try {
-      const uidJSON = JSON.stringify(req.user);
+      const uid = JSON.parse(JSON.stringify(req.user)).uid;
       /** Holds paged documents */
-      const documentsPaged = await DocumentService.multiDocPaged(req.params.page,JSON.parse(uidJSON).uid);
+      const documentsPaged = await DocumentService.multiDocPaged(
+        req.params.page,
+        uid
+      );
       res.send(documentsPaged);
     } catch (err) {
       return next(err);
@@ -57,8 +59,11 @@ export const DocumentController = {
    */
   async singleDoc(req: Request, res: Response, next: NextFunction) {
     try {
-      const uidJSON = JSON.stringify(req.user);
-      const singleDocument = await DocumentService.singleDoc(req.params.id,JSON.parse(uidJSON).uid);
+      const uid = JSON.parse(JSON.stringify(req.user)).uid;
+      const singleDocument = await DocumentService.singleDoc(
+        req.params.id,
+        uid
+      );
       res.send(singleDocument);
     } catch (err) {
       return next(err);
