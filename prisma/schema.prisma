@@ -8,7 +8,14 @@ datasource db {
 }
 
 model User {
-  username    String @unique
-  password String
-  group String
+  username    String        @unique
+  password    String
+  group       String
+  preferences Preferences?
+}
+
+model Preferences {
+  uid      String  @unique
+  darkmode Boolean
+  user User @relation(fields: [uid], references: [username])
 }

@@ -1,6 +1,6 @@
 import { z } from "zod";
 /**
- * Basic input validation for page request on '/api/v1/:page'
+ * Basic input validation for page request on '/api/v1/docs/:page'
  */
 export default z.object({
   params: z.object({

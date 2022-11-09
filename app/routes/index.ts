@@ -9,6 +9,7 @@ import { IndexController } from "../http/controllers/IndexController";
 // Create a router instance for our nested routes.
 const router = express.Router();
 
+
 // Assign routes to our router
 router.get("/", IndexController.index);
 
@@ -20,6 +21,13 @@ import AuthRouter from "./auth";
 
 router.use("/api/v1/auth", AuthRouter);
 
+
+//Import the user router
+import UserRouter from "./user";
+
+router.use("/api/v1/user", UserRouter);
+
+//Import document routers
 import MultiDocumentRouter from "./multiDocuments";
 import SingleDocumentRouter from "./singleDocument";
 
@@ -28,6 +36,10 @@ router.use("/api/v1/docs", MultiDocumentRouter);
 
 //Router to fetch one document
 router.use("/api/v1/doc", SingleDocumentRouter);
+
+//Import preference router
+import PreferenceRouter from "./preference";
+router.use("/api/v1/preferences", PreferenceRouter);
 
 import { parseFrontmatter } from "../services/DocumentService";
 /** Parse through frontmatter to be stored on server start and then every 1 minute */

@@ -64,6 +64,7 @@ export const DocumentController = {
         req.params.id,
         uid
       );
+
       res.send(singleDocument);
     } catch (err) {
       return next(err);

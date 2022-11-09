@@ -167,7 +167,7 @@ const docs = new Object();
 /**
  * Parses Frontmatter and stores in dictionary
  * @returns dictionary object
- * @throws 'Document Read Error' when there is an error reading the documents
+ * @throws UnprocessableEntity exception is title is not the first value in the frontmatter
  */
 export function parseFrontmatter() {
   /** All filenames in directory /docs */
@@ -178,56 +178,82 @@ export function parseFrontmatter() {
     if (file.endsWith(".md")) {
       //reads content of file and grabs the data from frontmatter
       fs.readFile("docs/" + file, "utf8", (err, data) => {
-        if (err) throw "Document Read Error";
+        if (err) throw new UnprocessableEntityException();
+
+        //Pull file name and store in id
+        const id = file.substring(0, file.length - 3);
+
 
         /** Tokenized markdown code */
         const token = marked.lexer(data);
 
-        /** Holds the block of frontmatter */
-        const values = token[1].raw.split("\n");
+        const frontMatter = token[1].text.split("\n");
 
-        /** id from frontmatter in md file (file name without '.md') */
-        const id = file.substring(0, file.length - 3);
+        //Assume title is first value in front matter and pull it
+        const titleKeyValue = frontMatter[0].split(": ");
+        const docTitleKey = titleKeyValue[0];
+        const docTitleValue = titleKeyValue[1];
 
-        /** Title of the markdown file */
-        const title = values[0].substring(8, values[0].length - 1);
+        //Check if assumption that title is first data member is true if not throw Unprocessable Error
+        if(docTitleKey != "title"){
+          throw new UnprocessableEntityException();
+        }
 
-        /** Description of the markdown file */
-        const description = values[1].substring(14, values[1].length - 1);
+        //Append title to docs object
+        docs[id] = appendFrontMatter(docs[id] || {}, docTitleKey, docTitleValue);
 
-        /** Author of the markdown file */
-        const author = values[2].substring(9, values[2].length - 1);
 
-        /** Group of the markdown file */
-        const group = values[3].substring(8, values[3].length - 1);
+        for(let i=1; i<frontMatter.length; i++) {
+          const keyValue = frontMatter[i].split(": ");
+          const key = keyValue[0];
+          const value = keyValue[1];
+          
+          //Append new key value pair to the return object
+          docs[id] = appendFrontMatter(docs[id] || {}, key, value);       
+        }
 
-        /** Date the markdown file was created */
-        const created = values[4].substring(9, values[4].length);
-        const createdDate = new Date(created);
-
-        /** Date the markdown file was last updated */
-        const updated = values[5].substring(9, values[5].length);
-        const updatedDate = new Date(updated);
-
-        /** Goes through the markdown file and stores everything except frontmatter in memory */
         var dataWithoutFrontmatter = "";
         const dataToken = marked.lexer(data);
-        for (var i = 3; i < dataToken.length; i++) {
+        for (let i = 3; i < dataToken.length; i++) {
           dataWithoutFrontmatter = dataWithoutFrontmatter + dataToken[i].raw;
         }
 
-        docs[id] = {
-          title: title,
-          description: description,
-          author: author,
-          group: group,
-          createdDate: createdDate,
-          updatedDate: updatedDate,
-          content: dataWithoutFrontmatter,
-        };
+        docs[id] = appendFrontMatter(docs[id] || {}, "content", dataWithoutFrontmatter);
       });
     }
   });
+}
+
+/**
+ * Function used in parsefrontMatter function
+ * to append new data being parsed to the 
+ * docs[id] object
+ * 
+ * @param doc The document being worked on currently
+ * @param key the key for the appending value
+ * @param value the value associated with the key
+ */
+function appendFrontMatter(doc, key, value) {
+  //If statement to detect if frontmatter data is a date
+  //If so a new Date object must be initialized
+  if(key == "created") {
+    const createDate = new Date(value);
+    doc[key] = createDate;
+  } else if(key == "updated") {
+    const updateDate = new Date(value);
+    doc[key] = updateDate;
+  } else {
+    //Remove quotation marks from the value to display correctly
+    if(value.substring(0,1) == "\"" && value.substring(value.length-1, value.length) == "\""){
+      const valueNoQuote = value.substring(1, value.length-1);
+      doc[key] = valueNoQuote;
+    }
+    else {
+      doc[key] = value;
+    }
+
+  }
+  return doc;
 }
 
 /** returns docs object to be used in DocService */
