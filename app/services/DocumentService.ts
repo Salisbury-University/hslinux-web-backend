@@ -1,35 +1,36 @@
 import NotFoundException from "../exceptions/NotFoundException";
 import { marked } from "marked";
 import fs from "fs";
-import ForbiddenException from '../exceptions/ForbiddenException'
+import ForbiddenException from "../exceptions/ForbiddenException";
 import { PrismaClient } from "@prisma/client";
 import UnauthorizedException from "../exceptions/UnauthorizedException";
+import UnprocessableEntityException from "../exceptions/UnprocessableEntityException";
 
 const prisma = new PrismaClient();
 /**
  * Service for Document that has functions to fetch the documents
  * from the database
- * 
+ *
  * &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
  * ONCE LOGIN WITH PRISMA STUFF IS MERGED, USE JWT INSTEAD OF UID
  * &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
- * 
+ *
  */
 export const DocumentService = {
-    /**
-     * Grabs all of the documents and returns the document IDs in a list
-     * @param uid Username ID
-     * @throws 'UnauthorizedException' when user doesnt exist
-     */
-    async multiDoc(uid) {
+  /**
+   * Grabs all of the documents and returns the document IDs in a list
+   * @param uid Username ID
+   * @throws 'UnauthorizedException' when user doesnt exist
+   */
+  async multiDoc(uid) {
+    try {
       const user = await prisma.user.findUnique({
         where: {
           username: uid, //Testing for now, retrieve user info then check in db
         },
       });
-      
-      if(!user)
-        throw new UnauthorizedException();
+
+      if (!user) throw new UnauthorizedException();
 
       const documents = getFrontmatter();
 
@@ -39,16 +40,18 @@ export const DocumentService = {
       };
 
       /**
-       * Loops through retrieved documents, checks if user has right group, 
+       * Loops through retrieved documents, checks if user has right group,
        * if it does, push Document ID into docs property of documentList
        */
       for (const id of Object.keys(documents)) {
-        if(user.group == documents[id].group)
-          documentList.docs.push(id);
+        if (user.group == documents[id].group) documentList.docs.push(id);
       }
 
       //Send the list of Document IDs to Body
       return documentList;
+    } catch (err) {
+      throw new UnprocessableEntityException();
+    }
   },
 
   /**
@@ -61,47 +64,49 @@ export const DocumentService = {
    * @throws 'UnauthorizedException' when user doesnt exist
    * @returns List of Document IDs
    */
-  async multiDocPaged(page,uid) {
-    /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
+  async multiDocPaged(page, uid) {
+    try {
+      /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
+      const user = await prisma.user.findUnique({
+        where: {
+          username: uid, //Testing for now, retrieve user info then check in db
+        },
+      });
 
-    const user = await prisma.user.findUnique({
-      where: {
-        username: uid, //Testing for now, retrieve user info then check in db
-      },
-    });
+      if (!user) throw new UnauthorizedException();
 
-    if(!user)
-      throw new UnauthorizedException();
+      const documents = getFrontmatter();
 
-    const documents = getFrontmatter();
+      /** Skips this number of documents */
+      const skip = (page - 1) * 10;
 
-    /** Skips this number of documents */
-    const skip = (page - 1) * 10;
+      /** Body to add the document IDs to */
+      const documentList = {
+        docs: [],
+      };
 
-    /** Body to add the document IDs to */
-    const documentList = {
-      docs: [],
-    };
+      /**
+       * Loops through retrieved documents and pushes Document IDs
+       * into docs property of documentList
+       *
+       * Later on, we'll need to check if we have access to this document
+       * with group attribute
+       */
+      for (let i = skip; i < Object.keys(documents).length; i++)
+        if (user.group == documents[Object.keys(documents)[i]].group)
+          documentList.docs.push(Object.keys(documents)[i]);
 
-    /**
-     * Loops through retrieved documents and pushes Document IDs
-     * into docs property of documentList
-     *
-     * Later on, we'll need to check if we have access to this document
-     * with group attribute
-     */
-    for (let i = skip; i < Object.keys(documents).length; i++)
-      if(user.group == documents[Object.keys(documents)[i]].group)
-        documentList.docs.push(Object.keys(documents)[i]);
-
-    return documentList;
+      return documentList;
+    } catch (err) {
+      throw new UnprocessableEntityException();
+    }
   },
 
   /**
    * Takes the id from the request and looks for it in the
    * dictionary object
    * If the document is not there, throw NotFoundException
-   * If the document is found, check group attribute for user against document group, 
+   * If the document is found, check group attribute for user against document group,
    * if they match, returns id, content, and metadata,
    * if they dont match, throw ForbiddenException
    * @param id Document ID
@@ -111,51 +116,51 @@ export const DocumentService = {
    * @throws 'ForbiddenException' when user group doesn't match document group
    * @returns ID, Content, and metadata of markdown file of given ID
    */
-  async singleDoc(id,uid) {
-      
-    
-    /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
-    const user = await prisma.user.findUnique({
-      where: {
-        username: uid,
-      },
-    });
-    
-  
+  async singleDoc(id, uid) {
+    try {
+      /** CHECK DECODE BODY FOR USER, THEN CHECK IF USER HAS ACCESS TO THAT DOCUMENT WITH THE GROUP  */
+      const user = await prisma.user.findUnique({
+        where: {
+          username: uid,
+        },
+      });
 
+      if (!user) throw new UnauthorizedException();
 
-    if(!user)
-      throw new UnauthorizedException();
-    
-    /** Documents Dictionary Object */
-    const documents = getFrontmatter();
+      /** Documents Dictionary Object */
+      const documents = getFrontmatter();
 
-    /**
-     * Finds document in database using ID
-     */
-    const document = documents[id]
+      /**
+       * Finds document in database using ID
+       */
+      const document = documents[id];
 
-    if (!document) //document doesnt exist
-      throw new NotFoundException()
-    else if(user.group == document.group){ //group matches
-      return {
-        id: id,
-        content: document.content,
-        metadata: {
-          title: document.title,
-          description: document.description,
-          author: document.author,
-          group: document.group,
-          dateCreated: document.createdDate,
-          dateUpdated: document.updatedDate
-        }
+      if (!document)
+        //document doesnt exist
+        throw new NotFoundException();
+      else if (user.group == document.group) {
+        //group matches
+        return {
+          id: id,
+          content: document.content,
+          metadata: {
+            title: document.title,
+            description: document.description,
+            author: document.author,
+            group: document.group,
+            dateCreated: document.createdDate,
+            dateUpdated: document.updatedDate,
+          },
+        };
+      } else {
+        //if group doesnt match
+        throw new ForbiddenException();
       }
-    }else{ //if group doesnt match
-      throw new ForbiddenException();
+    } catch (err) {
+      throw new UnprocessableEntityException();
     }
-    
-  }
-}
+  },
+};
 /** MARKDOWN FRONTMATTER PARSING */
 
 /** Holds frontmatter and markdown from the .md files */
