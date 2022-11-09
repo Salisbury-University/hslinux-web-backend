@@ -10,17 +10,13 @@ const prisma = new PrismaClient();
 /**
  * Service for Document that has functions to fetch the documents
  * from the database
- *
- * &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
- * ONCE LOGIN WITH PRISMA STUFF IS MERGED, USE JWT INSTEAD OF UID
- * &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
- *
  */
 export const DocumentService = {
   /**
    * Grabs all of the documents and returns the document IDs in a list
    * @param uid Username ID
    * @throws 'UnauthorizedException' when user doesnt exist
+   * @throws 'UnprocessableEntityException' when prisma throws error
    */
   async multiDoc(uid) {
     try {
@@ -62,6 +58,7 @@ export const DocumentService = {
    * @param page Page number
    * @param uid Username ID
    * @throws 'UnauthorizedException' when user doesnt exist
+   * @throws 'UnprocessableEntityException' when prisma throws error
    * @returns List of Document IDs
    */
   async multiDocPaged(page, uid) {
@@ -114,6 +111,7 @@ export const DocumentService = {
    * @throws 'UnauthorizedException' when user doesnt exist
    * @throws 'NotFoundException' when a document with given id given does not exist
    * @throws 'ForbiddenException' when user group doesn't match document group
+   * @throws 'UnprocessableEntityException' when prisma throws error
    * @returns ID, Content, and metadata of markdown file of given ID
    */
   async singleDoc(id, uid) {
