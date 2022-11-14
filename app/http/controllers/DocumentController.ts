@@ -37,6 +37,7 @@ export const DocumentController = {
   async multiDocPaged(req: Request, res: Response, next: NextFunction) {
     try {
       const uid = JSON.parse(JSON.stringify(req.user)).uid;
+      // console.log(uid)
       /** Holds paged documents */
       const documentsPaged = await DocumentService.multiDocPaged(
         req.params.page,
