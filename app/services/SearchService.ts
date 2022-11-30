@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { config } from "../../config";
 import { DocumentService } from "./DocumentService";
 import { decode } from "punycode";
+import { isRegExp } from "util/types";
 
 export const SearchService = {
   /**
@@ -66,6 +67,13 @@ export const SearchService = {
       }
 
       //Look for words within query
+      for (const word of searchString.split(" ")) {
+        if (metadata.toLowerCase().includes(searchString.toLowerCase())) {
+          if (!documentList.docs.includes(metadata)) {
+            documentList.docs.push(metadata);
+          }
+        }
+      }
     }
     return documentList;
   },
