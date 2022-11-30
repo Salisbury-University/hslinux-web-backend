@@ -9,7 +9,6 @@ import { IndexController } from "../http/controllers/IndexController";
 // Create a router instance for our nested routes.
 const router = express.Router();
 
-
 // Assign routes to our router
 router.get("/", IndexController.index);
 
@@ -21,11 +20,15 @@ import AuthRouter from "./auth";
 
 router.use("/api/v1/auth", AuthRouter);
 
-
 //Import the user router
 import UserRouter from "./user";
 
 router.use("/api/v1/user", UserRouter);
+
+//Import search router
+import SearchRouter from "./search";
+
+router.use("/api/v1/search", SearchRouter);
 
 //Import document routers
 import MultiDocumentRouter from "./multiDocuments";
