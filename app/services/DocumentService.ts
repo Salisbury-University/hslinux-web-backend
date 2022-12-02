@@ -5,7 +5,6 @@ import ForbiddenException from "../exceptions/ForbiddenException";
 import { PrismaClient } from "@prisma/client";
 import UnauthorizedException from "../exceptions/UnauthorizedException";
 import UnprocessableEntityException from "../exceptions/UnprocessableEntityException";
-import { isBuffer } from "util";
 
 const prisma = new PrismaClient();
 /**

@@ -26,7 +26,8 @@ export const AuthService = {
     const authToken = authHeader.split(" ")[1];
 
     //Verify user credentials from decoded jwt by attempting to login
-    const decodeBody = jwt.decode(authToken);
+    const decodeBody = jwt.verify(authToken, process.env.SECRET);
+
     //MAKE SURE DECODEBODY IS NOT NULL
     if (!decodeBody) {
       throw new JWTMalformedException();
@@ -104,7 +105,9 @@ export const AuthService = {
       }
 
       if (password == user.password) {
-        return jwt.sign({ uid: uid }, "SuperSecretSecret");
+        return jwt.sign({ uid: uid }, process.env.SECRET, {
+          expiresIn: "1 hour",
+        });
       } else {
         throw new UnauthorizedException();
       }
